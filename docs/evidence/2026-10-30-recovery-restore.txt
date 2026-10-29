@@ -1,0 +1,12 @@
+Observed 2026-10-30: cloned the complete recovery bundle to /Users/utkarshrajput/.local/share/zerorepeat/checkpoints/restored-2026-10-30.
+Command: shasum -a 256 -c docs/evidence/2026-10-30-source-manifest.sha256
+Result: all 15 recorded first-party source/build/toolchain-pin and vendored SQLite entries matched.
+Command: cmp docs/PLAN.md /Users/utkarshrajput/.codex/attachments/3fdac414-2e78-4781-b087-bead36753272/pasted-text-1.txt
+Result: exit 0, full plan unchanged.
+Command: /Users/utkarshrajput/.cache/zerorepeat/build/native/bin/zerorepeat continuity check
+Result: exit 0; 70 rows, 40 required, 13 complete, 28 required open, 25 reference audits open; evidence paths passed.
+Command: git status --short
+Result: empty, clean restored checkout.
+Command: git fsck --full --no-reflogs
+Result: exit 0, no diagnostics.
+Boundary: this verifies local snapshot restoration, not an offsite backup or full harness readiness.

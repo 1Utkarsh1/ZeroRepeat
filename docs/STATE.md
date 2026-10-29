@@ -15,7 +15,7 @@ Build the complete Zig coding harness in `PLAN.md`, optimized for correctness, t
 
 ## Verified implementation and evidence
 
-- `PLAN.md` is byte-identical to the full supplied attachment; it remains the release contract.
+- `PLAN.md` is byte-identical to the full supplied attachment; it remains the release contract. Implementation source checkpoint: `28e053d63f586185b4e12ef61ef951edc0c3fd59` on `Utkarsh/native-context-foundation`. Later handoff changes only update records/evidence.
 - `COVERAGE.tsv` retains 70 baseline rows: 18 complete-harness subsystem contracts, 22 billion-context dispositions, 4 continuity requirements, and 26 research references. The native checker now rejects deletion or kind changes for every baseline ID, completion without a revision/evidence, unfinished required work, and unresolved reference audits at release. It validates evidence structure, not whether a claim is true.
 - Native SQLite C-ABI/storage, immutable BLAKE3 originals, distinct event identities, transactional hierarchical folding, protection/rules, versioned restoration, bounded retrieval/offloading, lexical BM25 search, and budget diagnostics work locally. One database is one namespace; global/cross-session binding remains open.
 - A native incremental Chat Completions SSE decoder assembles complete tool arguments, separates reasoning, validates usage, and rejects malformed/truncated streams before exposing calls. HTTP transport and a live model loop remain open.
@@ -30,16 +30,15 @@ Build the complete Zig coding harness in `PLAN.md`, optimized for correctness, t
 
 The working compiler is `/Users/utkarshrajput/.cache/zerorepeat/bootstrap/zig-aarch64-macos-0.17.0/zig`; native build cache is `/Users/utkarshrajput/.cache/zerorepeat/zig-local`. The current native binary is `/Users/utkarshrajput/.cache/zerorepeat/build/native/bin/zerorepeat`. Zig 0.17 uses `-Doptimize=safe`; `ReleaseSafe` is not an accepted option in this installed version.
 
-macOS dataless placeholders blocked reads of the old workspace toolchain, SQLite, some source files, and Git metadata. Exact pinned dependencies were reacquired and checksummed. `context.zig` was recovered from recorded edits and build files from recorded successful reads; original placeholder inodes remain under `.research/offloaded-originals/`. Current implementation source is readable and checksummed. Original `.git` is preserved. After metadata materialization, ordinary status completes and confirms no previous commits on main. Byte comparisons now also prove all recovered original source/build bytes match their preserved originals. A separate recovery Git directory is `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/harness.git`, used with this workspace as `--work-tree`. See the verification record for checkpoint/bundle status. No offsite backup is configured.
+macOS dataless placeholders blocked reads of the old workspace toolchain, SQLite, some source files, and Git metadata. Exact pinned dependencies were reacquired and checksummed. `context.zig` was recovered from recorded edits and build files from recorded successful reads; original placeholder inodes remain under `.research/offloaded-originals/`. Current implementation source is readable and checksummed. Original `.git` is preserved. After metadata materialization, ordinary status completes and confirms no previous commits on main. Byte comparisons now also prove all recovered original source/build bytes match their preserved originals. A separate recovery Git directory is `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/harness.git`, used with this workspace as `--work-tree`. A complete recovery bundle at `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-context-2026-10-30.bundle` was verified and cloned to `restored-2026-10-30` beside it; all 15 source/dependency hashes, the original plan, continuity check and Git object integrity passed there. See the verification record for exact recovery commands. No offsite backup is configured.
 
 No paid inference or cloud resources have been created during construction. No resource IDs or spend to reconcile; recorded project deployment spend is US$0. This is not a fresh account-wide billing audit.
 
 ## Next concrete actions
 
-1. Complete the dated subprocess smoke/evidence, continuity/release checks, and a verified local Git/bundle checkpoint of this foundation.
-2. Continue M1: the actual headless provider/task/tool loop. Add portable request construction and HTTP transport with scripted local-server fixtures, bounded context-management rounds, cancellation/timeouts/budgets, and transient guidance that does not accumulate in canonical history.
-3. Implement repository inspection, expected-version file patches and isolated execution, then pass a complete inspect → edit → test → repair → verify workflow locally.
-4. Keep auditing the remaining pinned reference features alongside implementation. Do not mark M0 or the full release complete from this component's results.
+1. Continue M1: the actual headless provider/task/tool loop. Add portable request construction and HTTP transport with scripted local-server fixtures, bounded context-management rounds, cancellation/timeouts/budgets, and transient guidance that does not accumulate in canonical history.
+2. Implement repository inspection, expected-version file patches and isolated execution, then pass a complete inspect → edit → test → repair → verify workflow locally.
+3. Keep auditing the remaining pinned reference features alongside implementation. Do not mark M0 or the full release complete from this component's results.
 
 ## Open work and evidence boundaries
 

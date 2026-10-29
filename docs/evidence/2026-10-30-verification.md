@@ -1,6 +1,6 @@
 # Native context, continuity and protocol verification — 30 October 2026
 
-Scope: the current native component foundation and its exported Zig callers. **The complete ZeroRepeat harness and active goal remain unfinished.** The unchanged `../PLAN.md` is the release contract. Implementation hashes are recorded in `2026-10-30-source-manifest.sha256`; the local recovery Git checkpoint provides a source revision. Published upstream performance claims and real-model behavior are not evidence for these results.
+Scope: the current native component foundation and its exported Zig callers. **The complete ZeroRepeat harness and active goal remain unfinished.** The unchanged `../PLAN.md` is the release contract. Implementation hashes are recorded in `2026-10-30-source-manifest.sha256`; primary implementation source revision is `28e053d63f586185b4e12ef61ef951edc0c3fd59`. Subsequent handoff commits change records/evidence only. Published upstream performance claims and real-model behavior are not evidence for these results.
 
 ## Observed results
 
@@ -69,7 +69,7 @@ Pinned Zig archive SHA-256: `b607e9b9234790a008116ae5bdb71c6243b84b9fb42a53a9e70
 
 `context.zig` was recovered by replaying its 11 recorded patches and formatting: 49,939 bytes, matching original metadata. The 1,919-byte build file and 409-byte package manifest were recovered from recorded complete successful reads. Original placeholder inodes are preserved under `.research/offloaded-originals/`, not discarded. Reconstructed current files then passed compilation/tests and are hashed in the manifest.
 
-Original `.git` remains intact. Status initially blocked on placeholder metadata, including `.git/info/exclude`; after materialization it completes and confirms no previous commits on main. Byte comparisons against the now-readable preserved originals verify the recovered source/build bytes exactly; see `2026-10-30-source-recovery.txt`. A separate local recovery Git directory was initialized at `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/harness.git`, with this workspace as `--work-tree`; final checkpoint/bundle evidence is recorded there after verification. A local snapshot improves recovery across chat compaction and cloud-placeholder problems. It is not an offsite backup or a guarantee against physical disk loss.
+Original `.git` remains intact. Status initially blocked on placeholder metadata, including `.git/info/exclude`; after materialization it completes and confirms no previous commits on main. Byte comparisons against the now-readable preserved originals verify the recovered source/build bytes exactly; see `2026-10-30-source-recovery.txt`. A separate local recovery Git directory was initialized at `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/harness.git`, with this workspace as `--work-tree`. Its initial source snapshot is `aa425f52330194f7500a83f7e1a8d84b3ccd7a73`; this independent recovery commit has the same implementation hashes and plan, plus the binary manifest. A complete bundle was verified and restored to `restored-2026-10-30` beside it. Source hashes, original-plan comparison, continuity audit, clean checkout and `git fsck --full --no-reflogs` all passed in that clone. The bundle is refreshed with final handoff records before the turn ends. A local snapshot improves recovery across chat compaction and cloud-placeholder problems. It is not an offsite backup or a guarantee against physical disk loss.
 
 ## Corrections and remaining risks
 
@@ -78,3 +78,17 @@ The earlier coverage checker guarded only the 18 ZR IDs; claims that it protecte
 The combined CLI smoke log exposed a positional stdout writer overwriting prior redirected output. Streaming stdout fixes this, and a native subprocess regression verifies two consecutive commands preserve both their output and an earlier shared-file prefix. The refreshed smoke log contains the entire workflow.
 
 Not verified: actual Linux execution, HTTP/model connections, quality of model-written summaries, cross-session references, pending-job protection, injected process death/disk-full, full semantic graph/retention/backup, official benchmark results, or competitive superiority. All full-harness subsystem rows remain open. No paid inference, Runpod deployment, proxy installation, or client configuration rewrite occurred.
+
+## Local recovery commands and checkpoint details
+
+The working source commit is on `Utkarsh/native-context-foundation`. The independent recovery Git directory is outside Documents; its commit IDs differ from the primary repository because it has its own snapshot history. The source/dependency manifest proves the implementation bytes match. Bundle path: `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-context-2026-10-30.bundle`. Verified restore path: `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/restored-2026-10-30`. The adjacent `2026-10-30-checkpoint-receipt.txt` records final primary/recovery revisions and the bundle checksum.
+
+```sh
+git bundle verify /Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-context-2026-10-30.bundle
+git clone --branch Utkarsh/native-context-foundation --single-branch /Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-context-2026-10-30.bundle /new/physical/restore/path
+# In the restored directory:
+shasum -a 256 -c docs/evidence/2026-10-30-source-manifest.sha256
+git fsck --full --no-reflogs
+```
+
+The original source commit succeeded. Its automatic Git maintenance then blocked reading an older Codex checkpoint ref; the owned housekeeping child was terminated, and the commit command completed with exit 0. Later checkpoint commands disable automatic maintenance for that command only. Existing Codex refs/history, hooks, global configuration and security settings were not replaced. Broad whitespace checking flagged existing blank final lines in the exact upstream license and raw command reports; those evidence bytes were preserved, and authored source/records passed the scoped check.

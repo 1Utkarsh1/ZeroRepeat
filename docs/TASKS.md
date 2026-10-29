@@ -9,7 +9,7 @@ Status: `[ ]` pending, `[-]` in progress, `[x]` verified for the stated scope. E
 - [x] Implement and locally verify the native context foundation: immutable originals, transactional folding, protected sources, restoration/refold, offloading/retrieval, lexical search, rules, and explicit overflow.
 - [x] Add a strict native streaming decoder and context tool dispatch; verify their connection with local protocol fixtures and uncertain-result error handling.
 - [x] Preserve all 70 baseline coverage IDs/kinds and prevent incomplete required work or unresolved reference audits from passing the release gate.
-- [-] Finish current smoke/evidence and verified Git/bundle checkpoint outside cloud-managed Documents; preserve original Git and placeholder files.
+- [x] Finish current smoke/evidence and verified Git/bundle checkpoint outside cloud-managed Documents; restore a clone, verify source/plan hashes, continuity and Git integrity, and preserve original Git/placeholder files.
 - [-] Complete native integration through the actual bounded provider/task loop, provider history reconstruction, session binding, pending-job protection, and crash/disk-failure verification. The foundation is not the full integration or full harness.
 - [ ] Prove real-model compaction/rehydration fidelity after local workflows work; no paid request during construction.
 
@@ -26,7 +26,7 @@ Status: `[ ]` pending, `[-]` in progress, `[x]` verified for the stated scope. E
 
 ## Exact next work
 
-Finish the dated evidence/checkpoint, then implement native Chat Completions request/HTTP transport and a bounded headless loop against a Zig scripted provider. Preserve canonical history and transient guidance separately. Do not retry a mutating action whose result is uncertain. Follow with expected-version edits, isolated execution, and the full inspect/edit/test/repair/verify acceptance workflow.
+Implement native Chat Completions request/HTTP transport and a bounded headless loop against a Zig scripted provider. Preserve canonical history and transient guidance separately. Do not retry a mutating action whose result is uncertain. Follow with expected-version edits, isolated execution, and the full inspect/edit/test/repair/verify acceptance workflow.
 
 ## Per-turn discipline
 
