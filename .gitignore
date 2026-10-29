@@ -1,0 +1,7 @@
+.research/
+.tools/
+.zig-cache/
+zig-pkg/
+zig-out/
+.zerorepeat/
+.DS_Store

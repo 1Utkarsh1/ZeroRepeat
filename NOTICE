@@ -1,0 +1,11 @@
+ZeroRepeat contains a native Zig implementation of reviewed context-management
+mechanisms from billion-context and its acp-kernel by ranxianglei.
+
+Upstream: https://github.com/ranxianglei/billion-context
+Kernel: https://github.com/ranxianglei/acp-kernel
+Reviewed revision: 52567f19bd7846e3fb91d7513c949b0751cd1c47
+
+The complete upstream license, including its Additional Term — Attribution on
+Product Surfaces, is preserved in LICENSES/billion-context.txt. Visible project
+documentation carries this attribution. This is not a claim of full upstream
+feature parity or reproduction of its performance claims.

@@ -1,0 +1,11 @@
+1/10 continuity.test.audit retains pending required work and release rejects it...OK
+2/10 continuity.test.duplicates and missing core contracts are rejected...OK
+3/10 continuity.test.all original feature and reference IDs survive re-entry and cannot change kind...OK
+4/10 continuity.test.release also requires reference audits and completion pins a source revision...OK
+5/10 continuity.test.completion requires evidence and required work cannot be deferred...OK
+6/10 continuity.test.unknown state, malformed header and bad field count fail...OK
+7/10 continuity.test.evidence paths cannot escape the project...OK
+8/10 continuity.test.local completion evidence must exist and be nonempty...OK
+9/10 continuity.test.log append preserves old bytes and re-entry includes bounded log tail...OK
+10/10 continuity.test.re-entry reads only the recent tail of a growing log...OK
+All 10 tests passed.

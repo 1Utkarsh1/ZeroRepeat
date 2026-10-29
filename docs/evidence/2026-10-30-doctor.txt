@@ -1,0 +1,9 @@
+ZeroRepeat 0.1.0-dev; Zig 0.17.0; macos/aarch64
+SQLite 3.54.1; bundled native library.
+PASS: native SQLite context, FTS5 search, and self-contained context compilation.
+The probe used an in-memory database; no project database was changed.
+Reference model: Qwen/Qwen3.8-27B. Model/provider execution is not implemented yet.
+This command created no cloud resources and made no model request. Initial cloud budget remains US$7.
+Native Zig adaptation uses billion-context and acp-kernel mechanisms.
+https://github.com/ranxianglei/billion-context
+https://github.com/ranxianglei/acp-kernel

@@ -1,0 +1,127 @@
+Read AGENTS.md and docs/PLAN.md for the complete release contract. This context is a re-entry aid; inspect current Git/files/tests before trusting old status.
+
+--- docs/STATE.md ---
+# ZeroRepeat durable working context
+
+Updated: 2026-10-30, Australia/Sydney.
+
+## Goal and locked decisions
+
+Build the complete Zig coding harness in `PLAN.md`, optimized for correctness, time to correct solution, and tokens to correct solution. Preserve its full scope across turns and compaction. The active request also requires durable memory/context, a task list, every-turn rough logging, and native adoption of useful billion-context mechanisms.
+
+- All first-party implementation and tests are Zig; no Python implementation or prototype.
+- Zig 0.17.0; native SQLite/Tree-sitter C dependencies and Zig BLAKE3.
+- Reference model: `Qwen/Qwen3.8-27B`. Cloud budget: US$7 total. Build locally first; paid validation and competitive benchmarks come later.
+- Initial platforms: macOS ARM64 and Linux x86-64.
+- Omitted source must actually be available to the next inference. A stored reference, earlier exposure, or a cache assumption is insufficient.
+- Preserve user data and stale-edit checks; never automatically replay uncertain mutations.
+
+## Verified implementation and evidence
+
+- `PLAN.md` is byte-identical to the full supplied attachment; it remains the release contract.
+- `COVERAGE.tsv` retains 70 baseline rows: 18 complete-harness subsystem contracts, 22 billion-context dispositions, 4 continuity requirements, and 26 research references. The native checker now rejects deletion or kind changes for every baseline ID, completion without a revision/evidence, unfinished required work, and unresolved reference audits at release. It validates evidence structure, not whether a claim is true.
+- Native SQLite C-ABI/storage, immutable BLAKE3 originals, distinct event identities, transactional hierarchical folding, protection/rules, versioned restoration, bounded retrieval/offloading, lexical BM25 search, and budget diagnostics work locally. One database is one namespace; global/cross-session binding remains open.
+- A native incremental Chat Completions SSE decoder assembles complete tool arguments, separates reasoning, validates usage, and rejects malformed/truncated streams before exposing calls. HTTP transport and a live model loop remain open.
+- Typed native context `inspect`/`act` dispatch supports status/search/retrieval/fold/expand/refold. Unknown/duplicate fields and privileged rule requests are rejected. `CommittedResultUnavailable` means inspect current state and never replay automatically. File `patch` is not implemented or advertised.
+- The public Zig module exports these components. Scripted byte-fragmented provider fixtures exercise real native folding and exact retrieval; they are not real-model tests.
+- Integrated native tests: **78/78 passed** (75 core, 2 CLI parser, 1 subprocess stdout regression). Separate continuity tests: 10/10. Commands, source hashes, and limitations are in `evidence/2026-10-30-verification.md` and adjacent raw reports.
+- macOS native build and static Linux x86_64-musl `safe` cross-build passed. The Linux executable has not been run.
+- billion-context source was audited at `52567f19bd7846e3fb91d7513c949b0751cd1c47` (package 0.1.206, kernel 0.0.163). See `research/billion-context.md` for the 22-feature adoption map. Preserve the exact license's additional attribution term and both visible upstream links. Published savings were not reproduced.
+- The user-authorized personal memory note exists at `/Users/utkarshrajput/.codex/memories/extensions/ad_hoc/notes/2026-10-25T073047Z-zerorepeat-continuity.md`. It points back here; it does not replace these records.
+
+## Recovery and local environment
+
+The working compiler is `/Users/utkarshrajput/.cache/zerorepeat/bootstrap/zig-aarch64-macos-0.17.0/zig`; native build cache is `/Users/utkarshrajput/.cache/zerorepeat/zig-local`. The current native binary is `/Users/utkarshrajput/.cache/zerorepeat/build/native/bin/zerorepeat`. Zig 0.17 uses `-Doptimize=safe`; `ReleaseSafe` is not an accepted option in this installed version.
+
+macOS dataless placeholders blocked reads of the old workspace toolchain, SQLite, some source files, and Git metadata. Exact pinned dependencies were reacquired and checksummed. `context.zig` was recovered from recorded edits and build files from recorded successful reads; original placeholder inodes remain under `.research/offloaded-originals/`. Current implementation source is readable and checksummed. Original `.git` is preserved; its ordinary status command has blocked on placeholder metadata. A separate recovery Git directory is `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/harness.git`, used with this workspace as `--work-tree`. See the verification record for checkpoint/bundle status. No offsite backup is configured.
+
+No paid inference or cloud resources have been created during construction. No resource IDs or spend to reconcile; recorded project deployment spend is US$0. This is not a fresh account-wide billing audit.
+
+## Next concrete actions
+
+1. Complete the dated subprocess smoke/evidence, continuity/release checks, and a verified local Git/bundle checkpoint of this foundation.
+2. Continue M1: the actual headless provider/task/tool loop. Add portable request construction and HTTP transport with scripted local-server fixtures, bounded context-management rounds, cancellation/timeouts/budgets, and transient guidance that does not accumulate in canonical history.
+3. Implement repository inspection, expected-version file patches and isolated execution, then pass a complete inspect → edit → test → repair → verify workflow locally.
+4. Keep auditing the remaining pinned reference features alongside implementation. Do not mark M0 or the full release complete from this component's results.
+
+## Open work and evidence boundaries
+
+All 18 full-harness subsystem contracts remain pending or in progress. HTTP/provider variants, a task lifecycle, full semantic graph, repository index/Tree-sitter/LSP, model residency/branch manifests, command/PTY/job lifecycle, sandbox/policy, file edits/Git recovery, memory/skill promotion, subagents, plugins/MCP, TUI/headless task interfaces, complete SDK/ACP, full accounting and distribution remain unfinished. Native context projection does not implement pending jobs or provider-specific history reconstruction. Cross-session reference envelopes, injected process-crash/disk-full recovery, and bounded management rounds remain open.
+
+No billion-token scale test, real-model summary-quality result, token/time savings result, official benchmark, or competitor parity result exists. Fuzzy/CJK/embedding retrieval and optional upstream transforms/steering are not claimed. The active goal and complete release remain **incomplete**.
+
+--- docs/TASKS.md ---
+# ZeroRepeat task list
+
+Status: `[ ]` pending, `[-]` in progress, `[x]` verified for the stated scope. Evidence and acceptance limits live in `COVERAGE.tsv` and the dated evidence records.
+
+## Active request
+
+- [x] Save the full original plan, locked decisions, every-turn agreement, state/task/log records, and scoped personal memory pointer.
+- [x] Audit pinned billion-context source, license, persistence, compression/retrieval mechanisms, and tests; record 22 adoption dispositions and exclusions.
+- [x] Implement and locally verify the native context foundation: immutable originals, transactional folding, protected sources, restoration/refold, offloading/retrieval, lexical search, rules, and explicit overflow.
+- [x] Add a strict native streaming decoder and context tool dispatch; verify their connection with local protocol fixtures and uncertain-result error handling.
+- [x] Preserve all 70 baseline coverage IDs/kinds and prevent incomplete required work or unresolved reference audits from passing the release gate.
+- [-] Finish current smoke/evidence and verified Git/bundle checkpoint outside cloud-managed Documents; preserve original Git and placeholder files.
+- [-] Complete native integration through the actual bounded provider/task loop, provider history reconstruction, session binding, pending-job protection, and crash/disk-failure verification. The foundation is not the full integration or full harness.
+- [ ] Prove real-model compaction/rehydration fidelity after local workflows work; no paid request during construction.
+
+## Complete harness roadmap — all retained
+
+- [-] M0: contract, complete reference feature audit/corpus manifest, coverage gate, source evidence and reproducible dependencies. Pinned native dependencies and baseline checks are verified; remaining reference audits are open.
+- [-] M1: headless task loop, provider transport/request codecs, inspect/act/patch, isolated execution, streaming/cancellation/budgets. SSE decoding and context dispatch are verified; end-to-end coding is still pending.
+- [ ] M2: full objects/ledger/sessions/branches/jobs/replay, expected-version editing, migrations/backup/retention and crash recovery.
+- [-] M3: incremental repository index, L0/L1/L2 retrieval, output handling, compiler/residency/re-entry. Native history folding/retrieval is verified; repository and residency contracts remain open.
+- [ ] M4: memory/skills/evidence-based learning, subagents/branches, plugins/MCP and full effect-boundary policy.
+- [-] M5: TUI/plain task CLI/headless events/complete SDK/ACP, configuration/export/packaging/documentation. Development context CLI and component exports exist; full interfaces remain pending.
+- [ ] M6: fuzzing/stress/profile/dogfood and real-model functional validation within US$7 after local construction.
+- [ ] Later funded stage: frozen official benchmarks, paired Qwen harness baselines, separate proprietary product comparisons, ablations, uncertainty and reproducible reports.
+
+## Exact next work
+
+Finish the dated evidence/checkpoint, then implement native Chat Completions request/HTTP transport and a bounded headless loop against a Zig scripted provider. Preserve canonical history and transient guidance separately. Do not retry a mutating action whose result is uncertain. Follow with expected-version edits, isolated execution, and the full inspect/edit/test/repair/verify acceptance workflow.
+
+## Per-turn discipline
+
+- Read `AGENTS.md`, current state/tasks/latest log and full contract before changes; inspect actual files/Git/processes/results.
+- Append start/checkpoint/end records; update changed state and coverage without hiding pending requirements.
+- Save source revision, actual commands/results and limitations. Use source tools for complete repositories; REA for artifact/runtime questions that source cannot answer.
+- Keep the complete goal across compaction. A green component test or coverage structure check cannot establish full release readiness.
+
+--- docs/LOG.md (last <= 16384 bytes) ---
+# Append-only work log
+
+## 2026-10-25 18:30 Australia/Sydney — goal turn start
+
+Request: persist project memory, context, tasks, and a rough log every turn; assess and natively integrate `ranxianglei/billion-context`; use the reverse-engineer-anything workflow and appropriate tools.
+
+Inspected: full attached plan, workspace, parent instructions, memory registry, relevant skill, and remote repository identity. The authoritative workspace was empty except `.git`; the memory registry had no matching ZeroRepeat entry. The prior planning turn produced source evidence and a plan but did not implement files.
+
+Actions: saved the original plan unchanged, created the every-turn working agreement, state/task/log records, and ignored local research/tool/build outputs. Started an independent read-only billion-context source audit under the invoked skill's staged investigation workflow.
+
+Next: inspect pinned source and license; verify a Zig toolchain; implement and test native context/continuity behavior. Full-harness implementation and benchmark results remain unproven.
+
+## 2026-10-25 08:00:05 UTC — Native foundation checkpoint
+
+Pinned billion-context source reviewed at 52567f19bd7846e3fb91d7513c949b0751cd1c47. Zig 0.17.0 downloaded from official URL and SHA-256 verified. Native SQLite, context engine, continuity module and CLI now exist. Context supports durable immutable originals, exact source coverage, protected requirements/tool groups, atomic hierarchical folds, bounded retrieval, lexical search, versioned restoration/refold and explicit overflow. Independent regression tests have passed; full final-build evidence is being collected after the latest safety fixes. Foreign-database ownership and stable-prefix regressions were added. SQLite reproducible dependency and Linux cross-build checks are in progress. Full agent loop, repository graph, execution sandbox, provider integrations, TUI and official benchmarks remain pending. No Runpod resources created.
+
+## 2026-10-29 20:27:36 UTC — Goal turn start after interruption
+
+2026-10-30 Australia/Sydney: re-read the supplied full plan, AGENTS, STATE, TASKS and latest log. The previous resumed turn was interrupted after read-only inspection and made no authoritative progress. Current Git has no commits and all implementation files remain untracked; the prior native build handle 30320 is absent, so no live build is being replaced. Dependency documentation records prior 46-test/static Linux cross-build success; these claims will be refreshed before completion. Next: save fresh native test/build/CLI evidence, update task/coverage states, checkpoint the native integration in Git, then continue the actual agent loop under the unchanged full-harness contract. No paid cloud resources are authorized during construction.
+
+## 2026-10-29 20:32:26 UTC — Filesystem materialization diagnosis
+
+Fresh build 55370 is live but blocked before test execution; sample 54227 showed preadv on a Zig standard-library file. File flags prove the workspace toolchain/archive and vendored sqlite3.c include dataless placeholders; sqlite3.c has zero allocated blocks. Reacquiring the exact pinned archives into the non-Documents local cache and verifying their recorded checksums avoids relying on placeholder hydration. Existing source and the live process are preserved while acquisition is in progress. This is a local filesystem/toolchain issue, not a native test assertion failure.
+
+## 2026-10-29 20:46:02 UTC — Resume checkpoint and redirected-output finding
+
+Re-read the full PLAN and canonical state after compaction. Fresh core/CLI tests passed 46/46, native build and safe Linux x86_64-musl cross-build exited 0, and subprocess context smoke passed exact retrieval, nonce search, expansion, refold, rule retirement and stale generation rejection. The shared redirected smoke output exposed a real positional-stdout overwrite bug in src/main.zig; fix with streaming stdout and a regression before claiming complete CLI evidence. Current Git status is blocked reading dataless .git metadata; preserve that metadata and create an independent local recovery snapshot outside Documents. Provider streaming and native context dispatch remain under implementation; broader harness incomplete and cloud spend zero.
+
+## 2026-10-29 20:56:15 UTC — Source recovery and full coverage-baseline correction
+
+Recovered context.zig from 11 recorded source-edit patches, formatting after replay: 49,939 bytes, matching original metadata. Recovered exact build.zig/build.zig.zon 1,919/409 bytes from recorded successful reads. Original dataless inodes are preserved under .research/offloaded-originals; original .git is unchanged. Redirected stdout bug fixed with streaming writes; new subprocess regression passes. Review found coverage checker only enforced the 18 ZR IDs, allowing other original BC/MEM/REF rows to disappear, and did not gate pending reference audits at release. Strengthen it to retain all 70 baseline IDs and their kinds and reject incomplete reference audits. This corrects earlier broad missing-ID claims. Provider decoder passed 15 independent protocol tests; context dispatch validation and uncertain-result failure classification are being finalized.
+
+## 2026-10-29 22:43:42 UTC — Goal continuation start: integrated protocol and continuity evidence
+
+Previous goal turn classified as progress: native source recovery, redirected-output correction, preservation of all 70 original coverage IDs/kinds, and provider-to-context integration tests changed authoritative state. Re-read STATE/TASKS/LOG and unchanged full attached PLAN; cmp succeeded. Integrated Zig test run exited 0 with 78/78 tests (75 shared core, 2 CLI parser, 1 CLI subprocess); separate continuity tests passed 10/10. No build/test handle remains live. .git HEAD/config are now materialized; inspect actual original Git before selecting the final checkpoint. Next: update current records and acceptance evidence, refresh native/Linux build and subprocess smoke, save a durable Git snapshot/bundle, and continue the pending provider/task-loop work without shrinking the full contract. No paid model request or cloud provisioning.
+

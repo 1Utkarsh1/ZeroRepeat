@@ -1,0 +1,1 @@
+/Users/utkarshrajput/.cache/zerorepeat/build/linux-x86_64-musl/bin/zerorepeat: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), statically linked, with debug_info, not stripped

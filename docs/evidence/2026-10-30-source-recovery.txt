@@ -1,0 +1,4 @@
+PASS: recovered context.zig is byte-identical to the now-materialized original (49,939 bytes).
+PASS: recovered original build.zig is byte-identical to the now-materialized original (1,919 bytes); current build additionally wires integration tests.
+PASS: build.zig.zon is byte-identical to the now-materialized original (409 bytes).
+PASS: ordinary original Git status now completes; no earlier commits existed on main.
