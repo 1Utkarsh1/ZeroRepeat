@@ -2,6 +2,7 @@ pub const db = @import("db.zig");
 pub const context = @import("context.zig");
 pub const continuity = @import("continuity.zig");
 pub const provider_stream = @import("provider_stream.zig");
+pub const provider_request = @import("provider_request.zig");
 pub const context_tools = @import("context_tools.zig");
 
 test {
@@ -9,6 +10,7 @@ test {
     _ = context;
     _ = continuity;
     _ = provider_stream;
+    _ = provider_request;
     _ = context_tools;
     _ = @import("context_tests.zig");
     _ = @import("context_state_tests.zig");

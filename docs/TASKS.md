@@ -10,6 +10,7 @@ Status: `[ ]` pending, `[-]` in progress, `[x]` verified for the stated scope. E
 - [x] Audit pinned billion-context source, license, persistence, compression/retrieval mechanisms, and tests; record 22 adoption dispositions and exclusions.
 - [x] Implement and locally verify the native context foundation: immutable originals, transactional folding, protected sources, restoration/refold, offloading/retrieval, lexical search, rules, and explicit overflow.
 - [x] Add a strict native streaming decoder and context tool dispatch; verify their connection with local protocol fixtures and uncertain-result error handling.
+- [x] Add typed request encoding with preserved reasoning, complete parallel tool groups, exact byte limits and allocation-failure tests; integrate the actual context-tool schemas.
 - [x] Preserve all 70 baseline coverage IDs/kinds and prevent incomplete required work or unresolved reference audits from passing the release gate.
 - [x] Finish current smoke/evidence and verified Git/bundle checkpoint outside cloud-managed Documents; restore a clone, verify source/plan hashes, continuity and Git integrity, and preserve original Git/placeholder files.
 - [-] Complete native integration through the actual bounded provider/task loop, provider history reconstruction, session binding, pending-job protection, and crash/disk-failure verification. The foundation is not the full integration or full harness.
@@ -18,7 +19,7 @@ Status: `[ ]` pending, `[-]` in progress, `[x]` verified for the stated scope. E
 ## Complete harness roadmap — all retained
 
 - [-] M0: contract, complete reference feature audit/corpus manifest, coverage gate, source evidence and reproducible dependencies. Pinned native dependencies and baseline checks are verified; remaining reference audits are open.
-- [-] M1: headless task loop, provider transport/request codecs, inspect/act/patch, isolated execution, streaming/cancellation/budgets. SSE decoding and context dispatch are verified; end-to-end coding is still pending.
+- [-] M1: headless task loop, provider transport/request codecs, inspect/act/patch, isolated execution, streaming/cancellation/budgets. SSE decoding, typed request construction and context dispatch are verified; HTTP transport and end-to-end coding are still pending.
 - [ ] M2: full objects/ledger/sessions/branches/jobs/replay, expected-version editing, migrations/backup/retention and crash recovery.
 - [-] M3: incremental repository index, L0/L1/L2 retrieval, output handling, compiler/residency/re-entry. Native history folding/retrieval is verified; repository and residency contracts remain open.
 - [ ] M4: memory/skills/evidence-based learning, subagents/branches, plugins/MCP and full effect-boundary policy.

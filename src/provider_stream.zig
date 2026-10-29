@@ -28,6 +28,20 @@ pub const ToolCall = struct {
     arguments: []const u8,
 };
 
+pub fn validateToolCall(allocator: Allocator, tool: ToolCall, max_arguments_bytes: usize) !void {
+    if (!validId(tool.id) or !validName(tool.name)) return error.InvalidToolCall;
+    if (tool.arguments.len > max_arguments_bytes) return error.ArgumentsTooLarge;
+    var parsed = std.json.parseFromSlice(std.json.Value, allocator, tool.arguments, .{
+        .parse_numbers = false,
+        .max_value_len = max_arguments_bytes,
+    }) catch |err| return switch (err) {
+        error.OutOfMemory => error.OutOfMemory,
+        else => error.InvalidToolArguments,
+    };
+    defer parsed.deinit();
+    if (parsed.value != .object) return error.InvalidToolArguments;
+}
+
 pub const Reply = struct {
     arena: std.heap.ArenaAllocator,
     id: []const u8,
@@ -277,15 +291,7 @@ pub const Decoder = struct {
         for (self.tool_state.items, 0..) |tool, index| {
             if (!tool.present or tool.id == null or tool.name == null) return error.IncompleteToolCall;
             for (self.tool_state.items[0..index]) |other| if (other.id != null and std.mem.eql(u8, tool.id.?, other.id.?)) return error.DuplicateToolCallId;
-            var arguments = std.json.parseFromSlice(Value, self.allocator, tool.arguments.items, .{
-                .parse_numbers = false,
-                .max_value_len = self.limits.max_arguments_bytes,
-            }) catch |err| return switch (err) {
-                error.OutOfMemory => error.OutOfMemory,
-                else => error.InvalidToolArguments,
-            };
-            defer arguments.deinit();
-            if (arguments.value != .object) return error.InvalidToolArguments;
+            try validateToolCall(self.allocator, .{ .id = tool.id.?, .name = tool.name.?, .arguments = tool.arguments.items }, self.limits.max_arguments_bytes);
         }
         const tools = try self.arena.allocator().alloc(ToolCall, self.tool_state.items.len);
         for (self.tool_state.items, tools) |state, *tool| tool.* = .{ .id = state.id.?, .name = state.name.?, .arguments = state.arguments.items };

@@ -2,7 +2,19 @@ const std = @import("std");
 const context = @import("context.zig");
 const provider = @import("provider_stream.zig");
 const tools = @import("context_tools.zig");
+const request = @import("provider_request.zig");
 const a = std.testing.allocator;
+
+test "registered native context schemas are encoded with only their implemented capabilities" {
+    const body = try request.encode(a, .{ .messages = &.{.{ .role = .user, .content = "Inspect current context." }}, .tools_json = tools.tool_definitions }, .{});
+    defer a.free(body);
+    var parsed = try std.json.parseFromSlice(std.json.Value, a, body, .{});
+    defer parsed.deinit();
+    const definitions = parsed.value.object.get("tools").?.array.items;
+    try std.testing.expectEqual(@as(usize, 2), definitions.len);
+    try std.testing.expectEqualStrings("inspect", definitions[0].object.get("function").?.object.get("name").?.string);
+    try std.testing.expectEqualStrings("act", definitions[1].object.get("function").?.object.get("name").?.string);
+}
 
 fn toolStream(name: []const u8, arguments: []const u8) ![]u8 {
     const chunk = try std.json.Stringify.valueAlloc(a, .{
