@@ -7,7 +7,7 @@ pub const Limits = struct {
     max_tools: usize = 32,
     max_arguments_bytes: usize = 1024 * 1024,
 
-    fn validate(self: Limits) !void {
+    pub fn validate(self: Limits) !void {
         if (self.max_event_bytes == 0 or self.max_response_bytes == 0 or
             self.max_arguments_bytes == 0 or self.max_tools > 1024) return error.InvalidLimits;
     }

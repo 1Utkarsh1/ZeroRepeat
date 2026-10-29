@@ -3,6 +3,7 @@ pub const context = @import("context.zig");
 pub const continuity = @import("continuity.zig");
 pub const provider_stream = @import("provider_stream.zig");
 pub const provider_request = @import("provider_request.zig");
+pub const provider_http = @import("provider_http.zig");
 pub const context_tools = @import("context_tools.zig");
 
 test {
@@ -11,10 +12,12 @@ test {
     _ = continuity;
     _ = provider_stream;
     _ = provider_request;
+    _ = provider_http;
     _ = context_tools;
     _ = @import("context_tests.zig");
     _ = @import("context_state_tests.zig");
     _ = @import("provider_context_tests.zig");
+    _ = @import("provider_http_tests.zig");
 }
 
 test "bundled SQLite version and required compilation features are present" {

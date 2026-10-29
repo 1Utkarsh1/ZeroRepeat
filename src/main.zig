@@ -96,7 +96,7 @@ fn doctor(allocator: Allocator, writer: *Io.Writer) !void {
     try writer.print("SQLite {s}; bundled native library.\n", .{version_row.text(0)});
     try writer.writeAll("PASS: native SQLite context, FTS5 search, and self-contained context compilation.\n" ++
         "The probe used an in-memory database; no project database was changed.\n" ++
-        "Reference model: Qwen/Qwen3.8-27B. Model/provider execution is not implemented yet.\n" ++
+        "Reference model: Qwen/Qwen3.8-27B. Native HTTP transport is available in the Zig module; the CLI agent/model loop is not exposed yet.\n" ++
         "This command created no cloud resources and made no model request. Initial cloud budget remains US$7.\n");
     try writer.writeAll(attribution);
 }

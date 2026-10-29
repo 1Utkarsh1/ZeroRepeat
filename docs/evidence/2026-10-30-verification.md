@@ -87,10 +87,12 @@ The working source commit is on `Utkarsh/native-context-foundation`. The indepen
 git bundle verify /Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-context-2026-10-30.bundle
 git clone --branch Utkarsh/native-context-foundation --single-branch /Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-context-2026-10-30.bundle /new/physical/restore/path
 # In the restored directory:
-shasum -a 256 -c docs/evidence/2026-10-30-source-manifest.sha256
+shasum -a 256 -c docs/evidence/CURRENT_SOURCE.sha256
 git fsck --full --no-reflogs
 ```
 
 The original source commit succeeded. Its automatic Git maintenance then blocked reading an older Codex checkpoint ref; the owned housekeeping child was terminated, and the commit command completed with exit 0. Later checkpoint commands disable automatic maintenance for that command only. Existing Codex refs/history, hooks, global configuration and security settings were not replaced. Broad whitespace checking flagged existing blank final lines in the exact upstream license and raw command reports; those evidence bytes were preserved, and authored source/records passed the scoped check.
 
 The user subsequently authorized a public GitHub repository and regular pushes. `2026-10-30-github-publication.md` records the verified publication and supersedes the earlier absence of an offsite tracked-source copy; local recovery remains available.
+
+Subsequent request/HTTP implementations and their evidence are recorded in `../research/provider-protocol.md` and `CURRENT_SOURCE.sha256`; the earlier 79-test results and dated source/binary manifests above remain historical evidence at their named foundation revision.

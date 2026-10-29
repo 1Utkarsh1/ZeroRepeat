@@ -1,0 +1,35 @@
+1/34 provider_http_tests.test.native HTTP POST consumes fragmented chunked SSE with exact request and usage...OK
+2/34 provider_http_tests.test.HTTP status failures are typed without following redirects or retrying...OK
+3/34 provider_http_tests.test.truncated SSE and wrong media type never return a reply...OK
+4/34 provider_http_tests.test.one deadline covers both stalled response headers and a stalled streaming body...OK
+5/34 provider_http_tests.test.caller cancellation releases an in-flight streaming request and its children...OK
+6/34 provider_http_tests.test.HTTP response size and error-body bounds are enforced independently...OK
+7/34 provider_request.test.request preserves reasoning and complete parallel tools with out-of-order results...OK
+8/34 provider_request.test.reasoning wire alias is explicit and unsupported reasoning cannot disappear...OK
+9/34 provider_request.test.incomplete interrupted orphaned and duplicate tool exchanges are rejected before transmission...OK
+10/34 provider_request.test.invalid message fields and tool arguments do not become wire data...OK
+11/34 provider_request.test.the initial Qwen flow requires a user query and one leading system message...OK
+12/34 provider_request.test.tool definitions reject duplicate names unsupported schemas and malformed JSON...OK
+13/34 provider_request.test.request limits count actual escaped bytes and repeated events remain separate...OK
+14/34 provider_request.test.request construction cleans up every allocation failure...OK
+15/34 provider_stream.test.every two-part network split and bytewise UTF-8 splits produce the same complete text reply...OK
+16/34 provider_stream.test.CRLF comments, multiline data, BOM, and legacy reasoning survive bytewise framing...OK
+17/34 provider_stream.test.interleaved argument fragments become complete ordered tools with repeated function names...OK
+18/34 provider_stream.test.final usage-only chunk preserves cached and reasoning token counts without treating them as extra tokens...OK
+19/34 provider_stream.test.reply owns its memory after decoder deinit and neither decoder operation can be repeated...OK
+20/34 provider_stream.test.truncated streams and data after DONE cannot yield a reply...OK
+21/34 provider_stream.test.malformed, duplicate-key, non-object, and incomplete arguments never leave as executable tools...OK
+22/34 provider_stream.test.duplicate tool IDs, missing metadata, and tool fragments with a text finish are rejected...OK
+23/34 provider_stream.test.text length and content-filter finishes remain typed non-success outcomes...OK
+24/34 provider_stream.test.choice count, numeric types, completion identity, error events, and invalid JSON fail closed...OK
+25/34 provider_stream.test.event, response, argument, and tool limits reject before any reply is available...OK
+26/34 provider_stream.test.reasoning aliases are separate from content and cannot silently double or invent tools...OK
+27/34 provider_stream.test.optional function type and repeated stable tool metadata remain compatible...OK
+28/34 provider_stream.test.usage, finish ordering, and conflicting tool metadata reject ambiguous streams...OK
+29/34 provider_stream.test.every allocation failure cleans decoder and transferred reply ownership...OK
+30/34 provider_http.test.endpoint validation rejects credential injection insecure remote HTTP and URL credentials...OK
+31/34 provider_http.test.rejection classification and bounded error parsing never promote server text...OK
+32/34 provider_http.test.error classification reports allocation failure instead of guessing a model error...OK
+33/34 provider_http.test.Retry-After is advisory seconds and ambiguous or unsupported values remain unknown...OK
+34/34 provider_http.test.invalid request and resource settings fail before any connection can be made...OK
+All 34 tests passed.

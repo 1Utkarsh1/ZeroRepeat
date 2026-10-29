@@ -16,6 +16,55 @@ test "registered native context schemas are encoded with only their implemented 
     try std.testing.expectEqualStrings("act", definitions[1].object.get("function").?.object.get("name").?.string);
 }
 
+test "a real local HTTP provider request dispatches a validated native context fold" {
+    const http = @import("provider_http.zig");
+    const Fixture = @import("provider_http_tests.zig").Fixture;
+    const io = std.testing.io;
+    var ctx = try context.Context.open(":memory:", .{ .preserve_recent_messages = 0, .preserve_recent_tokens = 0 });
+    defer ctx.close();
+    var original: [8192]u8 = @splat('x');
+    const nonce = "HTTP-original-only-nonce-4e71";
+    @memcpy(original[50..][0..nonce.len], nonce);
+    _ = try ctx.append(a, .{ .external_id = "original", .role = .assistant, .body = &original });
+    _ = try ctx.append(a, .{ .external_id = "current", .role = .user, .body = "Preserve this current requirement." });
+    const compiled = try ctx.compile(a);
+    defer a.free(compiled.text);
+    const args = try std.json.Stringify.valueAlloc(a, .{
+        .op = "context.compress",
+        .generation = try ctx.generation(),
+        .ranges = .{.{ .start = "m1", .end = "m1", .summary = "Historical HTTP fixture evidence is archived and remains available through exact retrieval; the current requirement stays live." }},
+    }, .{});
+    defer a.free(args);
+    const wire = try toolStream("act", args);
+    defer a.free(wire);
+    var fixture = try Fixture.init();
+    defer fixture.server.deinit(io);
+    fixture.expected_content = compiled.text;
+    fixture.body = wire;
+    fixture.chunked = true;
+    const url = try fixture.endpoint();
+    defer a.free(url);
+    var serving = try io.concurrent(Fixture.run, .{&fixture});
+    defer _ = serving.cancel(io) catch {};
+    var client: std.http.Client = .{ .allocator = a, .io = io };
+    defer client.deinit();
+    var outcome = try http.complete(&client, .{ .url = url, .api_key = "local-fixture", .allow_http_loopback = true }, .{ .messages = &.{.{ .role = .user, .content = compiled.text }}, .tools_json = tools.tool_definitions }, .{ .timeout_ms = 2000 });
+    defer outcome.deinit();
+    try std.testing.expect(outcome == .reply and outcome.reply.tools.len == 1);
+    const call = outcome.reply.tools[0];
+    var result = try tools.dispatch(&ctx, a, .{ .name = call.name, .arguments = call.arguments });
+    defer result.deinit(a);
+    try std.testing.expectEqual(@as(i64, 3), result.generation);
+    const after = try ctx.compile(a);
+    defer a.free(after.text);
+    try std.testing.expect(std.mem.indexOf(u8, after.text, nonce) == null);
+    try std.testing.expect(std.mem.indexOf(u8, after.text, "Preserve this current requirement.") != null);
+    const retrieved = try ctx.retrieve(a, .{ .kind = .message, .id = 1 }, 0, 64 * 1024);
+    defer a.free(retrieved);
+    try std.testing.expectEqualStrings(&original, retrieved);
+    try serving.await(io);
+}
+
 fn toolStream(name: []const u8, arguments: []const u8) ![]u8 {
     const chunk = try std.json.Stringify.valueAlloc(a, .{
         .id = "local-protocol-fixture",

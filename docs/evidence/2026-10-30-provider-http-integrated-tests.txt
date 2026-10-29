@@ -1,0 +1,20 @@
+Build Summary: 11/11 steps succeeded; 100/100 tests passed
+test success
++- run test 97 pass (97 total) 3s MaxRSS:31M
+|  +- compile test debug native success 7s MaxRSS:479M
+|     +- WriteFile cached
+|     +- compile lib sqlite3 debug native cached 83ms MaxRSS:30M
+|     +- compile lib sqlite3 debug native (reused)
++- run test 2 pass (2 total) 413ms MaxRSS:2M
+|  +- compile test debug native success 2s MaxRSS:200M
+|     +- WriteFile (reused)
+|     +- compile lib sqlite3 debug native (reused)
+|     +- compile lib sqlite3 debug native (reused)
++- run test 1 pass (1 total) 619ms MaxRSS:5M
+   +- compile test debug native success 3s MaxRSS:218M
+      +- options success
+         +- compile exe zerorepeat debug native success 3s MaxRSS:226M
+            +- WriteFile (reused)
+            +- compile lib sqlite3 debug native (reused)
+            +- compile lib sqlite3 debug native (reused)
+
