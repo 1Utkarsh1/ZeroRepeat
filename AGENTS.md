@@ -7,6 +7,7 @@
 3. Append a dated start entry to `docs/LOG.md`: the current request, inspected state, and concrete next action. Append progress at meaningful checkpoints and an end entry before replying.
 4. Update `docs/STATE.md`, the task list, and `docs/COVERAGE.tsv` when authoritative state changes. Preserve unresolved requirements and exact next steps. Never mark the complete harness finished because one component passes.
 5. Save evidence and findings with source revision and limitations. Distinguish observed, source-established, inferred, proposed, and unknown facts. Record corrections explicitly.
+6. Commit and push project work and continuity records to GitHub at meaningful checkpoints and before ending an active work turn. The user explicitly authorized a public repository: `https://github.com/1Utkarsh1/ZeroRepeat`. Verify the remote branch SHA against the intended local commit before claiming it is uploaded. Preserve unfinished work and report actual push failures; never force-push or rewrite history to conceal divergence.
 
 ## Non-negotiable scope
 
@@ -20,4 +21,4 @@
 
 ## Completion and handoff
 
-`docs/COVERAGE.tsv` tracks requirements, evidence, acceptance tests, and dispositions. Pending rows remain visible. The broader release remains incomplete until all required rows have real implementation and verification evidence. Log exact test commands/results, remaining failures, cloud resource IDs/spend if any, and the next work item. Never persist API keys or credentials in these records.
+`docs/COVERAGE.tsv` tracks requirements, evidence, acceptance tests, and dispositions. Pending rows remain visible. The broader release remains incomplete until all required rows have real implementation and verification evidence. Log exact test commands/results, remaining failures, the verified GitHub checkpoint, cloud resource IDs/spend if any, and the next work item. Never persist API keys or credentials in these records.

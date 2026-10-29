@@ -2,6 +2,8 @@
 
 A Zig coding harness under construction, with a working native context engine and durable project-continuity tools.
 
+Public source: [1Utkarsh1/ZeroRepeat](https://github.com/1Utkarsh1/ZeroRepeat). Project and continuity checkpoints are committed and pushed during active work and before turn handoff; each push is checked against the remote commit.
+
 The complete release contract is in [docs/PLAN.md](docs/PLAN.md). The provider/tool agent loop, repository graph, execution sandbox, subagents, TUI, MCP, and Agent Client Protocol integration remain tracked work. This repository does not currently expose an autonomous coding agent or claim competitive benchmark performance.
 
 ## Keep the project context across turns

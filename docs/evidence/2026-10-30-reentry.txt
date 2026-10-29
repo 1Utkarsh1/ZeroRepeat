@@ -16,6 +16,10 @@ Build the complete Zig coding harness in `PLAN.md`, optimized for correctness, t
 - Omitted source must actually be available to the next inference. A stored reference, earlier exposure, or a cache assumption is insufficient.
 - Preserve user data and stale-edit checks; never automatically replay uncertain mutations.
 
+## GitHub checkpoints
+
+The public repository is https://github.com/1Utkarsh1/ZeroRepeat, configured as `origin`. The initial publication was verified at `275ea7296e481439b967aad173f658a20924fa03` on the default branch `Utkarsh/native-context-foundation`. Commit and push meaningful project checkpoints and before ending active work turns; compare the actual remote branch SHA with the intended local commit. Preserve history and report failures instead of force-pushing. The scoped personal instruction note is `/Users/utkarshrajput/.codex/memories/extensions/ad_hoc/notes/2026-10-29T230741Z-zerorepeat-github-checkpoints.md`. See `evidence/2026-10-30-github-publication.md`.
+
 ## Verified implementation and evidence
 
 - `PLAN.md` is byte-identical to the full supplied attachment; it remains the release contract. Implementation source checkpoint: `28e053d63f586185b4e12ef61ef951edc0c3fd59` on `Utkarsh/native-context-foundation`. Later handoff changes only update records/evidence.
@@ -33,7 +37,7 @@ Build the complete Zig coding harness in `PLAN.md`, optimized for correctness, t
 
 The working compiler is `/Users/utkarshrajput/.cache/zerorepeat/bootstrap/zig-aarch64-macos-0.17.0/zig`; native build cache is `/Users/utkarshrajput/.cache/zerorepeat/zig-local`. The current native binary is `/Users/utkarshrajput/.cache/zerorepeat/build/native/bin/zerorepeat`. Zig 0.17 uses `-Doptimize=safe`; `ReleaseSafe` is not an accepted option in this installed version.
 
-macOS dataless placeholders blocked reads of the old workspace toolchain, SQLite, some source files, and Git metadata. Exact pinned dependencies were reacquired and checksummed. `context.zig` was recovered from recorded edits and build files from recorded successful reads; original placeholder inodes remain under `.research/offloaded-originals/`. Current implementation source is readable and checksummed. Original `.git` is preserved. After metadata materialization, ordinary status completes and confirms no previous commits on main. Byte comparisons now also prove all recovered original source/build bytes match their preserved originals. A separate recovery Git directory is `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/harness.git`, used with this workspace as `--work-tree`. A complete recovery bundle at `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-context-2026-10-30.bundle` was verified and cloned to `restored-2026-10-30` beside it; all 15 source/dependency hashes, the original plan, continuity check and Git object integrity passed there. See the verification record for exact recovery commands. No offsite backup is configured.
+macOS dataless placeholders blocked reads of the old workspace toolchain, SQLite, some source files, and Git metadata. Exact pinned dependencies were reacquired and checksummed. `context.zig` was recovered from recorded edits and build files from recorded successful reads; original placeholder inodes remain under `.research/offloaded-originals/`. Current implementation source is readable and checksummed. Original `.git` is preserved. After metadata materialization, ordinary status completes and confirms no previous commits on main. Byte comparisons now also prove all recovered original source/build bytes match their preserved originals. A separate recovery Git directory is `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/harness.git`, used with this workspace as `--work-tree`. A complete recovery bundle at `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-context-2026-10-30.bundle` was verified and cloned to `restored-2026-10-30` beside it; all 15 source/dependency hashes, the original plan, continuity check and Git object integrity passed there. See the verification record for exact recovery commands. Tracked project source/history is now also published to the explicitly authorized public GitHub repository. Runtime data and local recovery files remain separate.
 
 No paid inference or cloud resources have been created during construction. No resource IDs or spend to reconcile; recorded project deployment spend is US$0. This is not a fresh account-wide billing audit.
 
@@ -55,6 +59,8 @@ No billion-token scale test, real-model summary-quality result, token/time savin
 Status: `[ ]` pending, `[-]` in progress, `[x]` verified for the stated scope. Evidence and acceptance limits live in `COVERAGE.tsv` and the dated evidence records.
 
 ## Active request
+
+- [x] Create the public GitHub repository, publish the verified history, and persist commit/push-at-checkpoint instructions.
 
 - [x] Save the full original plan, locked decisions, every-turn agreement, state/task/log records, and scoped personal memory pointer.
 - [x] Audit pinned billion-context source, license, persistence, compression/retrieval mechanisms, and tests; record 22 adoption dispositions and exclusions.
@@ -84,6 +90,7 @@ Implement native Chat Completions request/HTTP transport and a bounded headless 
 
 - Read `AGENTS.md`, current state/tasks/latest log and full contract before changes; inspect actual files/Git/processes/results.
 - Append start/checkpoint/end records; update changed state and coverage without hiding pending requirements.
+- Commit and push project/continuity checkpoints to `origin`, including before ending a work turn; verify the remote SHA and report failures.
 - Save source revision, actual commands/results and limitations. Use source tools for complete repositories; REA for artifact/runtime questions that source cannot answer.
 - Keep the complete goal across compaction. A green component test or coverage structure check cannot establish full release readiness.
 
@@ -131,4 +138,12 @@ Integrated tests now pass 79/79 with every test execution refreshed (76 shared c
 ## 2026-10-29 22:59:11 UTC — Goal turn end: verified foundation and durable handoff
 
 Implementation source checkpoint 28e053d63f586185b4e12ef61ef951edc0c3fd59 is committed on Utkarsh/native-context-foundation. The independent recovery Git/bundle outside Documents was verified, cloned, and checked: all 15 source/dependency hashes match, full PLAN matches the original attachment, continuity passes, checkout is clean and Git fsck succeeds. Final handoff records will be committed and the bundle refreshed without changing implementation bytes. Integrated tests passed 79/79; focused continuity 10/10; macOS build and static Linux safe cross-build passed. Linux runtime, HTTP/live model calls and official benchmarks remain untested. Correcting the earlier checkpoint wording: the smoke contains 19 CLI invocations including doctor and the expected stale-generation rejection, rather than 17. Original Git maintenance blocked on an old Codex checkpoint ref after commit; the owned maintenance child was cancelled and the commit exited 0. No user data, existing refs, global settings or security controls were replaced. Release gate deliberately fails with 28 required items and 25 reference audits open. Goal remains active and full scope unchanged. Next: M1 portable provider request/HTTP transport and bounded task loop, then expected-version edits and isolated test/repair execution. Construction cloud spend US$0; no resources or credentials created.
+
+## 2026-10-29 23:00:41 UTC — GitHub publishing request start
+
+New user instruction: continually push checkpoints to GitHub; if no repository exists, create one public. Re-read current STATE/TASKS/latest LOG and inspected actual Git. Working tree is clean on Utkarsh/native-context-foundation at 275ea72; no remote is configured. Existing tested source checkpoint is 28e053d, 79 native tests passed, local recovery bundle verified. Next: verify authenticated GitHub identity and repository absence, create public ZeroRepeat repository if needed, publish the existing verified history without force, verify remote HEAD, and persist commit/push-at-checkpoint instructions in the working agreement. This public publication is explicitly authorized; no cloud compute or paid model resources.
+
+## 2026-10-29 23:10:22 UTC — GitHub checkpoint and turn end
+
+Explicit user request handled: public repository https://github.com/1Utkarsh1/ZeroRepeat created under verified account 1Utkarsh1; origin configured and first push exited 0. GitHub API and ls-remote independently confirm initial remote commit 275ea7296e481439b967aad173f658a20924fa03 on default/upstream branch Utkarsh/native-context-foundation. The original live push was unblocked by materializing 102 Git files, preserving all Codex refs and source bytes. AGENTS, STATE, TASKS, README and MEM-01 acceptance/evidence now require commit/push at meaningful checkpoints and before work-turn handoff, with remote SHA verification and no force-push. Created the explicitly requested scoped persistent memory note at /Users/utkarshrajput/.codex/memories/extensions/ad_hoc/notes/2026-10-29T230741Z-zerorepeat-github-checkpoints.md. This final documentation checkpoint follows the verified first push and will be checked against the live remote after upload. Runtime code is unchanged; prior 79/79 native tests remain the applicable source evidence. Continuity audit passes; full release remains incomplete with 28 required items and 25 reference audits open. Next: M1 provider HTTP/request/task loop and then edit/test/repair; no paid inference or Runpod resources created.
 

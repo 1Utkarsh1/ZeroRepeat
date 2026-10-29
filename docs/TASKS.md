@@ -4,6 +4,8 @@ Status: `[ ]` pending, `[-]` in progress, `[x]` verified for the stated scope. E
 
 ## Active request
 
+- [x] Create the public GitHub repository, publish the verified history, and persist commit/push-at-checkpoint instructions.
+
 - [x] Save the full original plan, locked decisions, every-turn agreement, state/task/log records, and scoped personal memory pointer.
 - [x] Audit pinned billion-context source, license, persistence, compression/retrieval mechanisms, and tests; record 22 adoption dispositions and exclusions.
 - [x] Implement and locally verify the native context foundation: immutable originals, transactional folding, protected sources, restoration/refold, offloading/retrieval, lexical search, rules, and explicit overflow.
@@ -32,5 +34,6 @@ Implement native Chat Completions request/HTTP transport and a bounded headless 
 
 - Read `AGENTS.md`, current state/tasks/latest log and full contract before changes; inspect actual files/Git/processes/results.
 - Append start/checkpoint/end records; update changed state and coverage without hiding pending requirements.
+- Commit and push project/continuity checkpoints to `origin`, including before ending a work turn; verify the remote SHA and report failures.
 - Save source revision, actual commands/results and limitations. Use source tools for complete repositories; REA for artifact/runtime questions that source cannot answer.
 - Keep the complete goal across compaction. A green component test or coverage structure check cannot establish full release readiness.
