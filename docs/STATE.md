@@ -17,6 +17,8 @@ Build the complete Zig coding harness in `PLAN.md`, optimized for correctness, t
 
 The public repository is https://github.com/1Utkarsh1/ZeroRepeat, configured as `origin`. The initial publication was verified at `275ea7296e481439b967aad173f658a20924fa03` on the default branch `Utkarsh/native-context-foundation`. Commit and push meaningful project checkpoints and before ending active work turns; compare the actual remote branch SHA with the intended local commit. Preserve history and report failures instead of force-pushing. The scoped personal instruction note is `/Users/utkarshrajput/.codex/memories/extensions/ad_hoc/notes/2026-10-29T230741Z-zerorepeat-github-checkpoints.md`. See `evidence/2026-10-30-github-publication.md`.
 
+Latest tested implementation: `8a0f2594c624eb251a12560a478c1da8040c34a9`, tagged `native-task-driver-2026-10-30`. GitHub API and Git transport independently confirmed the branch/tag after push. Subsequent documentation-only receipts preserve those implementation bytes. See `evidence/2026-10-30-task-driver-checkpoint.md`.
+
 ## Verified implementation and evidence
 
 - `PLAN.md` is byte-identical to the full supplied attachment; it remains the release contract. Foundation source checkpoint: `28e053d63f586185b4e12ef61ef951edc0c3fd59` on `Utkarsh/native-context-foundation`. Later checkpoints are tagged `native-provider-request-2026-10-30`, `native-provider-http-2026-10-30` and `native-task-driver-2026-10-30`; current implementation hashes are in `evidence/CURRENT_SOURCE.sha256`.
@@ -32,6 +34,8 @@ The public repository is https://github.com/1Utkarsh1/ZeroRepeat, configured as 
 - The user-authorized personal memory note exists at `/Users/utkarshrajput/.codex/memories/extensions/ad_hoc/notes/2026-10-25T073047Z-zerorepeat-continuity.md`. It points back here; it does not replace these records.
 
 ## Recovery and local environment
+
+Current canonical recovery bundle: `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-task-2026-10-30.bundle`. It contains the actual primary Git history, branch and three provider/task tags, rather than the older independent snapshot history. It was verified complete and cloned to `restored-task-driver-2026-10-30` beside it. All 22 current source/build/dependency hashes, current state/tasks/log, original plan, continuity and Git fsck passed there. The final receipt commit is followed by an atomic bundle refresh and fast-forward of this owned restore clone. Older recovery snapshots are retained.
 
 The working compiler is `/Users/utkarshrajput/.cache/zerorepeat/bootstrap/zig-aarch64-macos-0.17.0/zig`; native build cache is `/Users/utkarshrajput/.cache/zerorepeat/zig-local`. The current native binary is `/Users/utkarshrajput/.cache/zerorepeat/build/native/bin/zerorepeat`. Zig 0.17 uses `-Doptimize=safe`; `ReleaseSafe` is not an accepted option in this installed version.
 

@@ -20,6 +20,8 @@ Build the complete Zig coding harness in `PLAN.md`, optimized for correctness, t
 
 The public repository is https://github.com/1Utkarsh1/ZeroRepeat, configured as `origin`. The initial publication was verified at `275ea7296e481439b967aad173f658a20924fa03` on the default branch `Utkarsh/native-context-foundation`. Commit and push meaningful project checkpoints and before ending active work turns; compare the actual remote branch SHA with the intended local commit. Preserve history and report failures instead of force-pushing. The scoped personal instruction note is `/Users/utkarshrajput/.codex/memories/extensions/ad_hoc/notes/2026-10-29T230741Z-zerorepeat-github-checkpoints.md`. See `evidence/2026-10-30-github-publication.md`.
 
+Latest tested implementation: `8a0f2594c624eb251a12560a478c1da8040c34a9`, tagged `native-task-driver-2026-10-30`. GitHub API and Git transport independently confirmed the branch/tag after push. Subsequent documentation-only receipts preserve those implementation bytes. See `evidence/2026-10-30-task-driver-checkpoint.md`.
+
 ## Verified implementation and evidence
 
 - `PLAN.md` is byte-identical to the full supplied attachment; it remains the release contract. Foundation source checkpoint: `28e053d63f586185b4e12ef61ef951edc0c3fd59` on `Utkarsh/native-context-foundation`. Later checkpoints are tagged `native-provider-request-2026-10-30`, `native-provider-http-2026-10-30` and `native-task-driver-2026-10-30`; current implementation hashes are in `evidence/CURRENT_SOURCE.sha256`.
@@ -35,6 +37,8 @@ The public repository is https://github.com/1Utkarsh1/ZeroRepeat, configured as 
 - The user-authorized personal memory note exists at `/Users/utkarshrajput/.codex/memories/extensions/ad_hoc/notes/2026-10-25T073047Z-zerorepeat-continuity.md`. It points back here; it does not replace these records.
 
 ## Recovery and local environment
+
+Current canonical recovery bundle: `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-task-2026-10-30.bundle`. It contains the actual primary Git history, branch and three provider/task tags, rather than the older independent snapshot history. It was verified complete and cloned to `restored-task-driver-2026-10-30` beside it. All 22 current source/build/dependency hashes, current state/tasks/log, original plan, continuity and Git fsck passed there. The final receipt commit is followed by an atomic bundle refresh and fast-forward of this owned restore clone. Older recovery snapshots are retained.
 
 The working compiler is `/Users/utkarshrajput/.cache/zerorepeat/bootstrap/zig-aarch64-macos-0.17.0/zig`; native build cache is `/Users/utkarshrajput/.cache/zerorepeat/zig-local`. The current native binary is `/Users/utkarshrajput/.cache/zerorepeat/build/native/bin/zerorepeat`. Zig 0.17 uses `-Doptimize=safe`; `ReleaseSafe` is not an accepted option in this installed version.
 
@@ -100,14 +104,6 @@ Extend the native bounded driver with repository inspection and expected-version
 
 --- docs/LOG.md (last <= 16384 bytes) ---
 
-## 2026-10-29 20:32:26 UTC — Filesystem materialization diagnosis
-
-Fresh build 55370 is live but blocked before test execution; sample 54227 showed preadv on a Zig standard-library file. File flags prove the workspace toolchain/archive and vendored sqlite3.c include dataless placeholders; sqlite3.c has zero allocated blocks. Reacquiring the exact pinned archives into the non-Documents local cache and verifying their recorded checksums avoids relying on placeholder hydration. Existing source and the live process are preserved while acquisition is in progress. This is a local filesystem/toolchain issue, not a native test assertion failure.
-
-## 2026-10-29 20:46:02 UTC — Resume checkpoint and redirected-output finding
-
-Re-read the full PLAN and canonical state after compaction. Fresh core/CLI tests passed 46/46, native build and safe Linux x86_64-musl cross-build exited 0, and subprocess context smoke passed exact retrieval, nonce search, expansion, refold, rule retirement and stale generation rejection. The shared redirected smoke output exposed a real positional-stdout overwrite bug in src/main.zig; fix with streaming stdout and a regression before claiming complete CLI evidence. Current Git status is blocked reading dataless .git metadata; preserve that metadata and create an independent local recovery snapshot outside Documents. Provider streaming and native context dispatch remain under implementation; broader harness incomplete and cloud spend zero.
-
 ## 2026-10-29 20:56:15 UTC — Source recovery and full coverage-baseline correction
 
 Recovered context.zig from 11 recorded source-edit patches, formatting after replay: 49,939 bytes, matching original metadata. Recovered exact build.zig/build.zig.zon 1,919/409 bytes from recorded successful reads. Original dataless inodes are preserved under .research/offloaded-originals; original .git is unchanged. Redirected stdout bug fixed with streaming writes; new subprocess regression passes. Review found coverage checker only enforced the 18 ZR IDs, allowing other original BC/MEM/REF rows to disappear, and did not gate pending reference audits at release. Strengthen it to retain all 70 baseline IDs and their kinds and reject incomplete reference audits. This corrects earlier broad missing-ID claims. Provider decoder passed 15 independent protocol tests; context dispatch validation and uncertain-result failure classification are being finalized.
@@ -163,4 +159,8 @@ Added native task/request/action journaling and bounded context-tool driver with
 ## 2026-10-30 00:50:25 UTC — Bounded driver source and review checkpoint
 
 Final native suite passed 126/126 (123 core, 2 CLI parser, 1 subprocess), including 26 driver/journal regressions and allocation-failure sweeps. Independent source cross-check found ambiguous task-to-requirement binding in shared context; added explicit sorted requirement refs with full source bytes retained and a two-task regression. Review found no additional actionable defect within its stated boundary. Added attention-generation fencing and regression, fixed idempotent host cancellation, and verified migration/collision and incomplete/future schemas. Native build, static Linux safe CLI build and semantic cross-compilation of root tests pass; Linux runtime, real HTTPS/model, process-kill/disk-full and full input/delegation/cost budgets remain untested/open. Coverage audit passes with 70 rows; release intentionally fails with 28 required and 25 reference audits open. Preparing native-task-driver-2026-10-30 commit/tag/push, then a canonical Git recovery bundle. Full goal remains active; US$0 construction cloud spend.
+
+## 2026-10-30 00:51:51 UTC — Goal turn end: bounded driver published and recoverable
+
+Source checkpoint 8a0f2594c624eb251a12560a478c1da8040c34a9 and native-task-driver-2026-10-30 are pushed; GitHub API and ls-remote confirm exact branch/tag equality. Integrated 126/126 native tests pass, native/doctor/static Linux CLI build and Linux root-test semantic compile pass. Canonical complete-history bundle was verified and cloned; all 22 source/build/dependency hashes, current state/tasks/log, full original plan, continuity and Git fsck match. Saving documentation-only binary/restore receipts, then pushing and refreshing the canonical bundle/owned clone to the final head. Full release remains incomplete with 28 required items and 25 reference audits open; source-only reference review did not complete Pi/dsh audits. Exact next: repository reads and expected-version patches through the native driver, then policy/isolated execution and full inspect-edit-test-repair-verify, plus task CLI/safe resume and independent verification. Real model/HTTPS, Linux execution, process-kill/disk-full and full input/delegation/cost budgets remain open. No paid inference or Runpod resource; project construction spend US$0. Goal remains active.
 
