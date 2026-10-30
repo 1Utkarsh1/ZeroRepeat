@@ -1,10 +1,10 @@
 # Native context integration contract
 
-The authoritative implementation is `src/context.zig`; its first-party callers are the CLI in `src/main.zig` and the exported Zig module in `src/root.zig`. Native tests are in `context_tests.zig`, `context_state_tests.zig`, and inline module tests. The full harness remains governed by `../PLAN.md`.
+The authoritative context implementation is `src/context.zig`; its callers include the CLI, typed context tools and bounded task driver exported through `src/root.zig`. Native tests are in `context_tests.zig`, `context_state_tests.zig`, `agent_tests.zig` and inline module tests. The full harness remains governed by `../PLAN.md`.
 
 ## Durable state
 
-One context database is one session namespace. SQLite application ID `0x5a525054` marks ownership; the current schema is version 1. A nonempty database without that identity, a foreign identity, an incomplete owned schema, or a future version is rejected before journal/schema configuration. The database uses WAL, FULL synchronization, foreign keys, and no-follow opens.
+One context database is one session namespace. SQLite application ID `0x5a525054` marks ownership; the current schema is version 2. Version one migrates transactionally by adding the task journal, preserving source bytes/identity/generation. A nonempty database without that identity, a foreign identity, an incomplete owned schema, or a future version is rejected before journal/schema configuration. The database uses WAL, FULL synchronization, foreign keys, and no-follow opens. A failed migration can leave WAL configured after the ownership check, but cannot publish partial schema/data changes; see [task-driver evidence](task-driver.md).
 
 Canonical message events have monotonically allocated IDs and a unique external-event alias. Re-ingesting the same alias with the same complete projection is idempotent; changed content or metadata behind that alias is rejected. Equal content in separate events still produces separate message references. BLAKE3 deduplicates and verifies immutable payload bytes; triggers reject canonical message/blob updates and deletes. Original history and summary revisions are retained. This is not yet the complete object graph or filesystem blob/retention/backup implementation required by ZR-03/04.
 
@@ -14,7 +14,7 @@ All fold batches use one immediate transaction and an expected generation. A fai
 
 ## Protection and provenance
 
-System messages, explicit pinned content, current user intent, configured recent messages/tokens, active rule sources, unresolved tool calls, opaque media, and ungrouped reasoning are protected. Protection closes over call/result and provider group membership. The apply path enforces the same constraints as recommendation. A partial atomic group is rejected.
+System messages, explicit pinned content, current user intent, configured recent messages/tokens, active rule sources, registered requirements/corrections of uncanceled tasks, unresolved tool calls, opaque media, and ungrouped reasoning are protected. Protection closes over call/result and provider group membership. The apply path enforces the same constraints as recommendation. A partial atomic group is rejected.
 
 Explicit constraints/tasks/decisions/facts require user/project authority and a real user-message source. Model/tool authority and a tool-message source cannot create privileged records. Supersession and retirement retain history; active records govern current obligations. Supplied summaries are labelled external and low trust, not falsely described as model-generated or verified facts.
 
@@ -32,7 +32,7 @@ SQLite FTS5 lexical BM25 search covers original messages and current summaries o
 
 The native default counts UTF-8 bytes conservatively. An external tokenizer callback can replace it; exactness is explicit. Token counts are checked before conversion to SQLite integers. Compilation includes its actual rendered labels and reserves output capacity. Overflow is a hard error; recommendation distinguishes normal/high/emergency pressure and an irreducible blocked context. Recommendations describe eligible positive-benefit, closed ranges, not a promise that any arbitrary summary is good.
 
-Growth cadence, provider-specific usage, repeated failed-management-call suppression, model-facing transient guidance, and cache economics need the provider loop. Optional absorption/transforms/steering remain separately tracked. No provider cache is treated as evidence that omitted source is resident.
+The native driver now caps management rounds, suppresses repeated identical failures, records typed usage/unknown output reservations and supplies transient current-generation guidance. Its scripted/HTTP evidence is in [task-driver.md](task-driver.md). Automatic growth/pressure cadence, exact full-request input/delegation/cost budgets, real-model effects and cache economics remain open. Optional absorption/transforms/steering remain separately tracked. No provider cache is treated as evidence that omitted source is resident.
 
 ## Local regressions added during construction
 

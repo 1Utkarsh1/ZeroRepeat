@@ -1,0 +1,8 @@
+Build Summary: 5/5 steps succeeded
+install success
++- install zerorepeat success
+   +- compile exe zerorepeat safe x86_64-linux-musl success 9s MaxRSS:360M
+      +- WriteFile cached
+      +- compile lib sqlite3 safe x86_64-linux-musl cached 62ms MaxRSS:30M
+      +- compile lib sqlite3 safe x86_64-linux-musl (reused)
+

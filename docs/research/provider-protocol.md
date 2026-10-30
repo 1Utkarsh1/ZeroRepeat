@@ -1,6 +1,6 @@
 # Initial native provider protocol
 
-The native components are `provider_request.zig` (typed request/history validation), `provider_stream.zig` (incremental SSE response decoding) and `context_tools.zig` (strict native context operations). They are exported through `root.zig`. The subsequent native HTTP checkpoint is described below. Endpoint capability negotiation and the actual bounded task loop remain open.
+The initial native components are `provider_request.zig` (typed request/history validation), `provider_stream.zig` (incremental SSE response decoding) and `context_tools.zig` (strict native context operations). They are exported through `root.zig`. Subsequent native HTTP and bounded task-driver checkpoints are described below. Endpoint capability negotiation and the complete coding workflow remain open.
 
 ## Source-established model constraints
 
@@ -56,4 +56,10 @@ Commands (compiler/cache paths are the verified locations in `STATE.md`):
 "$zr_zig" build -Dtarget=x86_64-linux-musl -Doptimize=safe --cache-dir "$zr_cache" --prefix /Users/utkarshrajput/.cache/zerorepeat/build/linux-x86_64-musl --summary all
 ```
 
-Current full source hashes are in `../evidence/CURRENT_SOURCE.sha256`; earlier dated manifests prove their named historical revisions. The task driver, bounded management rounds/transient guidance, durable action/usage records, aggregate model/token budgets, live delta delivery, provider variants/media and complete coding workflow remain pending. No model weights, paid inference or Runpod resources were used.
+Current full source hashes are in `../evidence/CURRENT_SOURCE.sha256`; earlier dated manifests prove their named historical revisions. At this HTTP checkpoint the task driver, bounded management rounds/transient guidance and durable action/usage records were still pending. No model weights, paid inference or Runpod resources were used.
+
+## Native bounded driver checkpoint
+
+`native-task-driver-2026-10-30` adds `task.zig` and `agent.zig`, with typed scripted and HTTP providers, durable requirement/request/action records, complete-burst validation, conservative recovery, bounded management rounds, transient guidance, output usage reservations and request/tool/wire/output/time caps. Provider reply validation also applies to typed scripted implementations. Twenty-six local regressions exercise these paths; the integrated suite passes 126/126. See [task-driver contract, source review and limitations](task-driver.md) and `../evidence/2026-10-30-task-driver-integrated-tests.txt`.
+
+Complete repository effects, independent verification/resume, live UI delivery, exact input/template/delegation/cost budgets, automatic pressure-triggered compaction, provider variants/media and real endpoint compatibility remain open. The CLI still exposes development context commands; this component does not complete the full coding harness.

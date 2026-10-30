@@ -57,6 +57,8 @@ pub const Error = error{
     OutOfMemory,
 };
 
+pub const Arg = union(enum) { int: i64, text: []const u8, blob: []const u8, null };
+
 fn check(code: c_int) Error!void {
     switch (code & 0xff) {
         c.SQLITE_OK => {},
@@ -112,10 +114,35 @@ pub const Db = struct {
         var handle: ?*c.sqlite3_stmt = null;
         var tail: [*c]const u8 = null;
         try check(c.sqlite3_prepare_v2(self.handle, sql.ptr, -1, &handle, &tail));
-        const statement = handle orelse return error.SqliteMisuse;
-        errdefer _ = c.sqlite3_finalize(statement);
+        const prepared = handle orelse return error.SqliteMisuse;
+        errdefer _ = c.sqlite3_finalize(prepared);
         if (tail != null and std.mem.trim(u8, std.mem.span(tail), " \r\n\t;").len != 0) return error.SqliteMisuse;
-        return .{ .handle = statement };
+        return .{ .handle = prepared };
+    }
+
+    pub fn statement(self: *Db, sql: [:0]const u8, args: []const Arg) !Statement {
+        var result = try self.prepare(sql);
+        errdefer result.deinit();
+        for (args, 1..) |arg, index| switch (arg) {
+            .int => |value| try result.bindInt(@intCast(index), value),
+            .text => |value| try result.bindText(@intCast(index), value),
+            .blob => |value| try result.bindBlob(@intCast(index), value),
+            .null => try result.bindNull(@intCast(index)),
+        };
+        return result;
+    }
+
+    pub fn run(self: *Db, sql: [:0]const u8, args: []const Arg) !void {
+        var stmt = try self.statement(sql, args);
+        defer stmt.deinit();
+        if (try stmt.step()) return error.UnexpectedRow;
+    }
+
+    pub fn number(self: *Db, sql: [:0]const u8, args: []const Arg) !i64 {
+        var stmt = try self.statement(sql, args);
+        defer stmt.deinit();
+        if (!try stmt.step()) return error.NotFound;
+        return stmt.int(0);
     }
 
     /// Borrowed until the connection's next SQLite call or close.

@@ -45,21 +45,45 @@ const Request = union(enum) {
 
 /// CommittedResultUnavailable means inspect current state; never replay the mutation.
 pub fn dispatch(ctx: *context.Context, allocator: Allocator, invocation: Invocation) !Result {
-    var committed = false;
-    return dispatchImpl(ctx, allocator, invocation, &committed) catch |err| {
-        if (committed) return error.CommittedResultUnavailable;
-        return err;
-    };
+    var prepared = try prepare(allocator, invocation);
+    defer prepared.deinit();
+    return prepared.apply(ctx, allocator);
 }
 
+pub const Prepared = struct {
+    parsed: std.json.Parsed(Value),
+    request: Request,
+
+    pub fn deinit(self: *Prepared) void {
+        self.parsed.deinit();
+        self.* = undefined;
+    }
+
+    pub fn mutating(self: *const Prepared) bool {
+        return self.request.mutating();
+    }
+
+    pub fn apply(self: *const Prepared, ctx: *context.Context, allocator: Allocator) !Result {
+        var committed = false;
+        return dispatchImpl(ctx, allocator, self.request, self.parsed.value, &committed) catch |err| {
+            if (committed) return error.CommittedResultUnavailable;
+            return err;
+        };
+    }
+};
+
 // Decode the entire invocation before effects; tools cannot grant rule authority.
-fn dispatchImpl(ctx: *context.Context, allocator: Allocator, invocation: Invocation, committed: *bool) !Result {
+pub fn prepare(allocator: Allocator, invocation: Invocation) !Prepared {
     if (invocation.arguments.len > max_input_bytes) return error.ToolInputTooLarge;
     if (std.mem.eql(u8, invocation.name, "patch")) return error.UnsupportedOperation;
     if (!std.mem.eql(u8, invocation.name, "inspect") and !std.mem.eql(u8, invocation.name, "act")) return error.UnknownTool;
     var parsed = try std.json.parseFromSlice(Value, allocator, invocation.arguments, .{ .duplicate_field_behavior = .@"error" });
-    defer parsed.deinit();
+    errdefer parsed.deinit();
     const request = try decode(parsed.arena.allocator(), invocation.name, parsed.value);
+    return .{ .parsed = parsed, .request = request };
+}
+
+fn dispatchImpl(ctx: *context.Context, allocator: Allocator, request: Request, value: Value, committed: *bool) !Result {
     // A read snapshot also rolls back retrieval accounting if result production fails.
     const owns_read = !request.mutating() and !ctx.database.inTransaction();
     if (owns_read) try ctx.database.exec("BEGIN;");
@@ -69,7 +93,7 @@ fn dispatchImpl(ctx: *context.Context, allocator: Allocator, invocation: Invocat
     var json: std.json.Stringify = .{ .writer = &buffer.writer };
     try json.beginObject();
     try json.objectField("operation");
-    try json.write(try string(try object(parsed.value), "op"));
+    try json.write(try string(try object(value), "op"));
     switch (request) {
         .status => {
             const status = try ctx.status();

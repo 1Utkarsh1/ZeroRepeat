@@ -170,7 +170,7 @@ pub const Recommendation = struct {
     }
 };
 
-const Arg = union(enum) { int: i64, text: []const u8, blob: []const u8, null };
+const Arg = sqlite.Arg;
 const max_body_bytes = 64 * 1024 * 1024;
 
 pub const Context = struct {
@@ -185,16 +185,19 @@ pub const Context = struct {
         const version = try self.number("PRAGMA user_version;", &.{});
         const tables = try self.number("SELECT count(*) FROM sqlite_master WHERE name NOT LIKE 'sqlite_%';", &.{});
         if ((application == 0 and (tables != 0 or version != 0)) or (application != 0 and application != 0x5a525054)) return error.ForeignDatabase;
-        if (version != 0 and version != 1) return error.UnsupportedSchemaVersion;
+        if (version != 0 and version != 1 and version != 2) return error.UnsupportedSchemaVersion;
         if (application == 0x5a525054) {
-            if (version != 1 or try self.number("SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN('meta','identity','blobs','messages','blocks','block_versions','block_members','block_direct_messages','block_children','rules','events','search_index');", &.{}) != 12)
+            if (version == 0 or try self.number("SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN('meta','identity','blobs','messages','blocks','block_versions','block_members','block_direct_messages','block_children','rules','events','search_index');", &.{}) != 12)
+                return error.IncompleteSchema;
+            if (version == 2 and try self.number("SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN('tasks','task_requirements','model_requests','actions','task_events');", &.{}) != 5)
                 return error.IncompleteSchema;
         }
         try self.database.configureDurability();
         try self.database.exec("BEGIN IMMEDIATE;");
         errdefer self.database.exec("ROLLBACK;") catch {};
         try self.database.exec(schema);
-        try self.database.exec("PRAGMA application_id=0x5a525054; PRAGMA user_version=1; COMMIT;");
+        try self.database.exec(task_schema);
+        try self.database.exec("PRAGMA application_id=0x5a525054; PRAGMA user_version=2; COMMIT;");
         return self;
     }
 
@@ -204,21 +207,11 @@ pub const Context = struct {
     }
 
     fn statement(self: *Context, sql: [:0]const u8, args: []const Arg) !sqlite.Statement {
-        var result = try self.database.prepare(sql);
-        errdefer result.deinit();
-        for (args, 1..) |arg, index| switch (arg) {
-            .int => |value| try result.bindInt(@intCast(index), value),
-            .text => |value| try result.bindText(@intCast(index), value),
-            .blob => |value| try result.bindBlob(@intCast(index), value),
-            .null => try result.bindNull(@intCast(index)),
-        };
-        return result;
+        return self.database.statement(sql, args);
     }
 
     fn run(self: *Context, sql: [:0]const u8, args: []const Arg) !void {
-        var stmt = try self.statement(sql, args);
-        defer stmt.deinit();
-        if (try stmt.step()) return error.UnexpectedRow;
+        return self.database.run(sql, args);
     }
 
     fn beginRead(self: *Context) !bool {
@@ -232,10 +225,7 @@ pub const Context = struct {
     }
 
     fn number(self: *Context, sql: [:0]const u8, args: []const Arg) !i64 {
-        var stmt = try self.statement(sql, args);
-        defer stmt.deinit();
-        if (!try stmt.step()) return error.NotFound;
-        return stmt.int(0);
+        return self.database.number(sql, args);
     }
 
     pub fn generation(self: *Context) !i64 {
@@ -250,10 +240,20 @@ pub const Context = struct {
         try self.run("INSERT INTO events(kind,message_id,block_id) VALUES(?,?,?);", &.{
             .{ .text = kind }, if (message) |id| .{ .int = id } else .null, if (block) |id| .{ .int = id } else .null,
         });
+        try self.advanceGeneration();
+    }
+
+    /// Use within the caller's transaction so projection invalidation commits with its cause.
+    pub fn advanceGeneration(self: *Context) !void {
+        if (!self.database.inTransaction()) return error.TransactionRequired;
+        if (try self.generation() == std.math.maxInt(i64)) return error.GenerationOverflow;
         try self.run("UPDATE meta SET value=value+1 WHERE key='generation';", &.{});
     }
 
-    fn putBlob(self: *Context, body: []const u8) ![32]u8 {
+    /// Publish immutable bytes within a caller-owned transaction.
+    pub fn putBlob(self: *Context, body: []const u8) ![32]u8 {
+        if (!self.database.inTransaction()) return error.TransactionRequired;
+        if (body.len > max_body_bytes) return error.ContentTooLarge;
         var hash: [32]u8 = undefined;
         std.crypto.hash.Blake3.hash(body, &hash, .{});
         try self.run("INSERT OR IGNORE INTO blobs(hash,body) VALUES(?,?);", &.{ .{ .blob = &hash }, .{ .blob = body } });
@@ -261,6 +261,14 @@ pub const Context = struct {
         defer stored.deinit();
         if (!try stored.step() or !std.mem.eql(u8, stored.blob(0), body)) return error.CorruptContent;
         return hash;
+    }
+
+    pub fn readBlob(self: *Context, allocator: Allocator, hash: []const u8) ![]u8 {
+        var stmt = try self.statement("SELECT body FROM blobs WHERE hash=?;", &.{.{ .blob = hash }});
+        defer stmt.deinit();
+        if (!try stmt.step()) return error.CorruptContent;
+        try verifyBlob(hash, stmt.blob(0));
+        return allocator.dupe(u8, stmt.blob(0));
     }
 
     fn tokenCount(self: *const Context, text: []const u8) !usize {
@@ -362,7 +370,7 @@ pub const Context = struct {
         var ids = std.AutoHashMap(i64, void).init(allocator);
         errdefer ids.deinit();
         var hard = try self.statement(
-            "SELECT id FROM messages WHERE pinned=1 OR role=0 OR kind=4 OR (kind=1 AND group_id='') OR id=(SELECT max(id) FROM messages WHERE role=1) OR id IN(SELECT source_id FROM rules WHERE active=1);",
+            "SELECT id FROM messages WHERE pinned=1 OR role=0 OR kind=4 OR (kind=1 AND group_id='') OR id=(SELECT max(id) FROM messages WHERE role=1) OR id IN(SELECT source_id FROM rules WHERE active=1) OR id IN(SELECT r.message_id FROM task_requirements r JOIN tasks t ON t.id=r.task_id WHERE t.state<>'canceled');",
             &.{},
         );
         defer hard.deinit();
@@ -851,6 +859,25 @@ const schema =
     \\CREATE TRIGGER IF NOT EXISTS immutable_blob_update BEFORE UPDATE ON blobs BEGIN SELECT RAISE(ABORT,'content is immutable'); END;
     \\CREATE TRIGGER IF NOT EXISTS immutable_blob_delete BEFORE DELETE ON blobs BEGIN SELECT RAISE(ABORT,'content cannot be deleted'); END;
     \\CREATE TRIGGER IF NOT EXISTS immutable_block_version BEFORE UPDATE ON block_versions BEGIN SELECT RAISE(ABORT,'summary versions are immutable'); END;
+;
+
+// Version 2 adds a journal; version 1 originals and projection bytes are untouched.
+const task_schema =
+    \\CREATE TABLE IF NOT EXISTS tasks(id INTEGER PRIMARY KEY AUTOINCREMENT,state TEXT NOT NULL CHECK(state IN('pending','running','awaiting_verification','failed','canceled','attention','budget_exhausted')),reason TEXT NOT NULL DEFAULT '',elapsed_ms INTEGER NOT NULL DEFAULT 0 CHECK(elapsed_ms>=0),max_requests INTEGER NOT NULL CHECK(max_requests>0),max_tool_calls INTEGER NOT NULL CHECK(max_tool_calls>=0),max_management_rounds INTEGER NOT NULL CHECK(max_management_rounds>=0),max_wire_bytes INTEGER NOT NULL CHECK(max_wire_bytes>0),max_output_tokens INTEGER NOT NULL CHECK(max_output_tokens>0),output_per_request INTEGER NOT NULL CHECK(output_per_request>0),max_elapsed_ms INTEGER NOT NULL CHECK(max_elapsed_ms>0));
+    \\CREATE TABLE IF NOT EXISTS task_requirements(task_id INTEGER NOT NULL REFERENCES tasks(id),message_id INTEGER NOT NULL REFERENCES messages(id),PRIMARY KEY(task_id,message_id));
+    \\CREATE TABLE IF NOT EXISTS model_requests(id INTEGER PRIMARY KEY AUTOINCREMENT,task_id INTEGER NOT NULL REFERENCES tasks(id),generation INTEGER NOT NULL CHECK(generation>=0),payload BLOB NOT NULL REFERENCES blobs(hash),output_reserved INTEGER NOT NULL CHECK(output_reserved>0),phase TEXT NOT NULL CHECK(phase IN('started','replied','rejected','uncertain')),response BLOB REFERENCES blobs(hash),response_id TEXT,diagnostic TEXT NOT NULL DEFAULT '',management INTEGER NOT NULL DEFAULT 0 CHECK(management IN(0,1)),input_tokens INTEGER CHECK(input_tokens>=0),output_tokens INTEGER CHECK(output_tokens>=0),cached_input_tokens INTEGER CHECK(cached_input_tokens BETWEEN 0 AND input_tokens),reasoning_tokens INTEGER CHECK(reasoning_tokens BETWEEN 0 AND output_tokens),UNIQUE(task_id,response_id));
+    \\CREATE INDEX IF NOT EXISTS request_task ON model_requests(task_id,id);
+    \\CREATE TABLE IF NOT EXISTS actions(id INTEGER PRIMARY KEY AUTOINCREMENT,request_id INTEGER NOT NULL REFERENCES model_requests(id),position INTEGER NOT NULL CHECK(position>=0),provider_id TEXT NOT NULL,name TEXT NOT NULL,arguments BLOB NOT NULL REFERENCES blobs(hash),mutating INTEGER NOT NULL CHECK(mutating IN(0,1)),phase TEXT NOT NULL CHECK(phase IN('planned','started','succeeded','failed','uncertain','abandoned')),result BLOB REFERENCES blobs(hash),diagnostic TEXT NOT NULL DEFAULT '',UNIQUE(request_id,position),UNIQUE(request_id,provider_id));
+    \\CREATE INDEX IF NOT EXISTS action_request ON actions(request_id,id);
+    \\CREATE TABLE IF NOT EXISTS task_events(seq INTEGER PRIMARY KEY AUTOINCREMENT,task_id INTEGER NOT NULL REFERENCES tasks(id),kind TEXT NOT NULL,request_id INTEGER REFERENCES model_requests(id),action_id INTEGER REFERENCES actions(id),created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP);
+    \\CREATE TRIGGER IF NOT EXISTS immutable_task_event_update BEFORE UPDATE ON task_events BEGIN SELECT RAISE(ABORT,'task events are immutable'); END;
+    \\CREATE TRIGGER IF NOT EXISTS immutable_task_event_delete BEFORE DELETE ON task_events BEGIN SELECT RAISE(ABORT,'task events cannot be deleted'); END;
+    \\CREATE TRIGGER IF NOT EXISTS immutable_task_requirement BEFORE DELETE ON task_requirements BEGIN SELECT RAISE(ABORT,'task requirements cannot be deleted'); END;
+    \\CREATE TRIGGER IF NOT EXISTS immutable_task_requirement_update BEFORE UPDATE ON task_requirements BEGIN SELECT RAISE(ABORT,'task requirements are immutable'); END;
+    \\CREATE TRIGGER IF NOT EXISTS immutable_request_input BEFORE UPDATE OF task_id,generation,payload,output_reserved ON model_requests BEGIN SELECT RAISE(ABORT,'request intent is immutable'); END;
+    \\CREATE TRIGGER IF NOT EXISTS immutable_action_input BEFORE UPDATE OF request_id,position,provider_id,name,arguments,mutating ON actions BEGIN SELECT RAISE(ABORT,'action intent is immutable'); END;
+    \\CREATE TRIGGER IF NOT EXISTS immutable_request_delete BEFORE DELETE ON model_requests BEGIN SELECT RAISE(ABORT,'request history cannot be deleted'); END;
+    \\CREATE TRIGGER IF NOT EXISTS immutable_action_delete BEFORE DELETE ON actions BEGIN SELECT RAISE(ABORT,'action history cannot be deleted'); END;
 ;
 
 fn testConfig() Config {

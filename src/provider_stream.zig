@@ -51,6 +51,31 @@ pub const Reply = struct {
     finish_reason: FinishReason,
     usage: ?Usage,
 
+    /// Also validate typed/scripted providers, which do not pass through SSE decoding.
+    pub fn validate(self: Reply, allocator: Allocator, limits: Limits) !void {
+        try limits.validate();
+        if (!validId(self.id)) return error.InvalidCompletionId;
+        if (!std.unicode.utf8ValidateSlice(self.content) or !std.unicode.utf8ValidateSlice(self.reasoning)) return error.InvalidUtf8;
+        if ((self.finish_reason == .tool_calls) != (self.tools.len != 0)) return error.InconsistentFinishReason;
+        if (self.tools.len > limits.max_tools) return error.ToolLimitExceeded;
+        var bytes = self.id.len;
+        for ([_][]const u8{ self.content, self.reasoning }) |text| {
+            bytes = std.math.add(usize, bytes, text.len) catch return error.ResponseTooLarge;
+        }
+        for (self.tools, 0..) |tool, index| {
+            for (self.tools[0..index]) |other| if (std.mem.eql(u8, tool.id, other.id)) return error.DuplicateToolCallId;
+            for ([_][]const u8{ tool.id, tool.name, tool.arguments }) |text| bytes = std.math.add(usize, bytes, text.len) catch return error.ResponseTooLarge;
+            if (bytes > limits.max_response_bytes) return error.ResponseTooLarge;
+            try validateToolCall(allocator, tool, limits.max_arguments_bytes);
+        }
+        if (bytes > limits.max_response_bytes) return error.ResponseTooLarge;
+        if (self.usage) |usage| {
+            _ = std.math.add(u64, usage.input_tokens, usage.output_tokens) catch return error.InvalidUsage;
+            if ((usage.cached_input_tokens != null and usage.cached_input_tokens.? > usage.input_tokens) or
+                (usage.reasoning_tokens != null and usage.reasoning_tokens.? > usage.output_tokens)) return error.InvalidUsage;
+        }
+    }
+
     pub fn deinit(self: *Reply) void {
         self.arena.deinit();
         self.* = undefined;

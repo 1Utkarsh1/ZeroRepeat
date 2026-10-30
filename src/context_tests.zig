@@ -728,7 +728,7 @@ test "future owned schemas are rejected before changing journal settings or stor
         var ctx = try context.Context.open(path, config());
         defer ctx.close();
         _ = try append(&ctx, "future", .assistant, "Future-owned source must survive.");
-        try ctx.database.exec("PRAGMA user_version=2; PRAGMA journal_mode=DELETE;");
+        try ctx.database.exec("PRAGMA user_version=999; PRAGMA journal_mode=DELETE;");
     }
     try std.testing.expectError(error.UnsupportedSchemaVersion, context.Context.open(path, config()));
     var db = try sqlite.Db.openUnconfigured(path);
@@ -736,7 +736,7 @@ test "future owned schemas are rejected before changing journal settings or stor
     var version = try db.prepare("PRAGMA user_version;");
     defer version.deinit();
     try std.testing.expect(try version.step());
-    try std.testing.expectEqual(@as(i64, 2), version.int(0));
+    try std.testing.expectEqual(@as(i64, 999), version.int(0));
     var journal = try db.prepare("PRAGMA journal_mode;");
     defer journal.deinit();
     try std.testing.expect(try journal.step());
