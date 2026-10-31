@@ -7,6 +7,7 @@ pub const provider_http = @import("provider_http.zig");
 pub const context_tools = @import("context_tools.zig");
 pub const task = @import("task.zig");
 pub const agent = @import("agent.zig");
+pub const repository = @import("repository.zig");
 
 test {
     _ = db;
@@ -18,6 +19,8 @@ test {
     _ = context_tools;
     _ = task;
     _ = agent;
+    _ = repository;
+    _ = @import("repository_tests.zig");
     _ = @import("agent_tests.zig");
     _ = @import("context_tests.zig");
     _ = @import("context_state_tests.zig");

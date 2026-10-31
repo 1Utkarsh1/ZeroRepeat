@@ -2,7 +2,7 @@
 
 This checkpoint adds the exported Zig `task` journal and `agent.run` driver. It connects the native Chat Completions modules to context operations through the same typed boundary for scripted and HTTP providers. The current executable still exposes development context/continuity commands. Repository inspection/editing, isolated commands, the task CLI, independent verification, general resume and the full coding workflow remain required work under `../PLAN.md`.
 
-Implementation source revision: tag `native-task-driver-2026-10-30`. Exact source/build/dependency bytes are in `../evidence/CURRENT_SOURCE.sha256`. The prior transport revision was `10f5e68f25ef97d8dbd904ca79d2479b43f96e9e`; the schema-one fixture was extracted from `8a1b6fc35f8526c28f2d82bf7d45fdb3392527e4:src/context.zig`, with the original SQL retained in `src/fixtures/context-v1.sql`.
+Historical implementation source revision: tag `native-task-driver-2026-10-30`; this document's 126-test results and schema-two description refer to that checkpoint. The later `native-repository-edits-2026-11-01` checkpoint adds optional repository tools, schema three, productive-versus-management action accounting and 144 integrated tests; see [its contract and evidence](repository-editing.md). Current source/build/dependency bytes are in `../evidence/CURRENT_SOURCE.sha256`; use the historical tag for older bytes. The prior transport revision was `10f5e68f25ef97d8dbd904ca79d2479b43f96e9e`; the schema-one fixture was extracted from `8a1b6fc35f8526c28f2d82bf7d45fdb3392527e4:src/context.zig`, with the original SQL retained in `src/fixtures/context-v1.sql`.
 
 ## State and effect boundaries
 

@@ -185,19 +185,23 @@ pub const Context = struct {
         const version = try self.number("PRAGMA user_version;", &.{});
         const tables = try self.number("SELECT count(*) FROM sqlite_master WHERE name NOT LIKE 'sqlite_%';", &.{});
         if ((application == 0 and (tables != 0 or version != 0)) or (application != 0 and application != 0x5a525054)) return error.ForeignDatabase;
-        if (version != 0 and version != 1 and version != 2) return error.UnsupportedSchemaVersion;
+        if (version < 0 or version > 3) return error.UnsupportedSchemaVersion;
         if (application == 0x5a525054) {
             if (version == 0 or try self.number("SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN('meta','identity','blobs','messages','blocks','block_versions','block_members','block_direct_messages','block_children','rules','events','search_index');", &.{}) != 12)
                 return error.IncompleteSchema;
-            if (version == 2 and try self.number("SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN('tasks','task_requirements','model_requests','actions','task_events');", &.{}) != 5)
+            if (version >= 2 and try self.number("SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN('tasks','task_requirements','model_requests','actions','task_events');", &.{}) != 5)
                 return error.IncompleteSchema;
+            if (version == 3 and (try self.number("SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN('repositories','repo_files','repo_versions','edit_batches','edit_entries');", &.{}) != 5 or
+                try self.number("SELECT count(*) FROM pragma_table_info('actions') WHERE name='management';", &.{}) != 1)) return error.IncompleteSchema;
         }
         try self.database.configureDurability();
         try self.database.exec("BEGIN IMMEDIATE;");
         errdefer self.database.exec("ROLLBACK;") catch {};
         try self.database.exec(schema);
         try self.database.exec(task_schema);
-        try self.database.exec("PRAGMA application_id=0x5a525054; PRAGMA user_version=2; COMMIT;");
+        if (version < 3) try self.database.exec("ALTER TABLE actions ADD COLUMN management INTEGER NOT NULL DEFAULT 0 CHECK(management IN(0,1)); UPDATE actions SET management=mutating;");
+        try self.database.exec(repository_schema);
+        try self.database.exec("PRAGMA application_id=0x5a525054; PRAGMA user_version=3; COMMIT;");
         return self;
     }
 
@@ -878,6 +882,21 @@ const task_schema =
     \\CREATE TRIGGER IF NOT EXISTS immutable_action_input BEFORE UPDATE OF request_id,position,provider_id,name,arguments,mutating ON actions BEGIN SELECT RAISE(ABORT,'action intent is immutable'); END;
     \\CREATE TRIGGER IF NOT EXISTS immutable_request_delete BEFORE DELETE ON model_requests BEGIN SELECT RAISE(ABORT,'request history cannot be deleted'); END;
     \\CREATE TRIGGER IF NOT EXISTS immutable_action_delete BEFORE DELETE ON actions BEGIN SELECT RAISE(ABORT,'action history cannot be deleted'); END;
+;
+
+const repository_schema =
+    \\CREATE TABLE IF NOT EXISTS repositories(id INTEGER PRIMARY KEY CHECK(id=1),root TEXT NOT NULL,identity TEXT NOT NULL);
+    \\CREATE TABLE IF NOT EXISTS repo_files(id INTEGER PRIMARY KEY AUTOINCREMENT,path TEXT NOT NULL,identity TEXT NOT NULL,version INTEGER NOT NULL,active INTEGER NOT NULL CHECK(active IN(0,1)));
+    \\CREATE UNIQUE INDEX IF NOT EXISTS repo_active_path ON repo_files(path) WHERE active=1;
+    \\CREATE TABLE IF NOT EXISTS repo_versions(file_id INTEGER NOT NULL REFERENCES repo_files(id),version INTEGER NOT NULL,hash BLOB NOT NULL REFERENCES blobs(hash),permissions INTEGER NOT NULL,identity TEXT NOT NULL,metadata BLOB NOT NULL CHECK(length(metadata)=32),PRIMARY KEY(file_id,version));
+    \\CREATE TABLE IF NOT EXISTS edit_batches(id INTEGER PRIMARY KEY AUTOINCREMENT,generation INTEGER NOT NULL,state TEXT NOT NULL CHECK(state IN('planned','publishing','applied','attention','reviewed')),undo_of INTEGER REFERENCES edit_batches(id),action_id INTEGER REFERENCES actions(id),diagnostic TEXT NOT NULL DEFAULT '');
+    \\CREATE UNIQUE INDEX IF NOT EXISTS one_open_edit ON edit_batches((1)) WHERE state IN('planned','publishing','attention');
+    \\CREATE TABLE IF NOT EXISTS edit_entries(batch_id INTEGER NOT NULL REFERENCES edit_batches(id),position INTEGER NOT NULL,file_id INTEGER NOT NULL,base_version INTEGER NOT NULL,old_hash BLOB NOT NULL REFERENCES blobs(hash),new_hash BLOB NOT NULL REFERENCES blobs(hash),recovery_name TEXT NOT NULL,parent_identity TEXT NOT NULL,stage_identity TEXT,state TEXT NOT NULL CHECK(state IN('planned','staged','started','applied')),result_version INTEGER,PRIMARY KEY(batch_id,position),FOREIGN KEY(file_id,base_version) REFERENCES repo_versions(file_id,version));
+    \\CREATE TRIGGER IF NOT EXISTS immutable_repo_version_update BEFORE UPDATE ON repo_versions BEGIN SELECT RAISE(ABORT,'file versions are immutable'); END;
+    \\CREATE TRIGGER IF NOT EXISTS immutable_repo_version_delete BEFORE DELETE ON repo_versions BEGIN SELECT RAISE(ABORT,'file versions cannot be deleted'); END;
+    \\CREATE TRIGGER IF NOT EXISTS immutable_edit_intent BEFORE UPDATE OF batch_id,position,file_id,base_version,old_hash,new_hash,recovery_name,parent_identity ON edit_entries BEGIN SELECT RAISE(ABORT,'edit intent is immutable'); END;
+    \\CREATE TRIGGER IF NOT EXISTS immutable_edit_delete BEFORE DELETE ON edit_entries BEGIN SELECT RAISE(ABORT,'edit evidence cannot be deleted'); END;
+    \\CREATE TRIGGER IF NOT EXISTS immutable_action_management BEFORE UPDATE OF management ON actions BEGIN SELECT RAISE(ABORT,'action classification is immutable'); END;
 ;
 
 fn testConfig() Config {

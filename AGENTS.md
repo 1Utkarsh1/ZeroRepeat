@@ -1,5 +1,9 @@
 # ZeroRepeat working agreement
 
+## Local storage
+
+Use `/Users/utkarshrajput/Library/Application Support/Local AI Workspaces` for new AI working files, scratch and generated outputs. Resolve `~/Documents/ChatGPT` or `~/Documents/Codex` before writing and use these compatibility paths only when they point into that local workspace. This project's resolved root is `/Users/utkarshrajput/Library/Application Support/Local AI Workspaces/ChatGPT/Harness`. Keep existing files/history and unrelated iCloud syncing intact; do not put new AI outputs in other synced folders unless explicitly requested.
+
 ## Every turn, including after context compaction
 
 1. Read `docs/STATE.md`, `docs/TASKS.md`, and the newest entries in `docs/LOG.md` before changing code. Read `docs/PLAN.md` for the full release contract; chat summaries never replace it.

@@ -30,6 +30,7 @@ const c = struct {
     extern "c" fn sqlite3_prepare_v2(*sqlite3, [*:0]const u8, c_int, *?*sqlite3_stmt, ?*[*c]const u8) c_int;
     extern "c" fn sqlite3_errmsg(*sqlite3) [*:0]const u8;
     extern "c" fn sqlite3_get_autocommit(*sqlite3) c_int;
+    extern "c" fn sqlite3_db_filename(*sqlite3, [*:0]const u8) ?[*:0]const u8;
     extern "c" fn sqlite3_finalize(*sqlite3_stmt) c_int;
     extern "c" fn sqlite3_bind_text(*sqlite3_stmt, c_int, [*]const u8, c_int, sqlite3_destructor_type) c_int;
     extern "c" fn sqlite3_bind_blob(*sqlite3_stmt, c_int, *const anyopaque, c_int, sqlite3_destructor_type) c_int;
@@ -98,7 +99,7 @@ pub const Db = struct {
     }
 
     pub fn configureDurability(self: *Db) Error!void {
-        try self.exec("PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL;");
+        try self.exec("PRAGMA foreign_keys=ON; PRAGMA journal_mode=WAL; PRAGMA synchronous=FULL; PRAGMA fullfsync=ON;");
     }
 
     pub fn close(self: *Db) void {
@@ -152,6 +153,10 @@ pub const Db = struct {
 
     pub fn inTransaction(self: *const Db) bool {
         return c.sqlite3_get_autocommit(self.handle) == 0;
+    }
+
+    pub fn filename(self: *const Db) []const u8 {
+        return if (c.sqlite3_db_filename(self.handle, "main")) |name| std.mem.span(name) else "";
     }
 };
 

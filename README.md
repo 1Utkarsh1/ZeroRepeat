@@ -4,7 +4,7 @@ A Zig coding harness under construction, with a working native context engine an
 
 Public source: [1Utkarsh1/ZeroRepeat](https://github.com/1Utkarsh1/ZeroRepeat). Project and continuity checkpoints are committed and pushed during active work and before turn handoff; each push is checked against the remote commit.
 
-The complete release contract is in [docs/PLAN.md](docs/PLAN.md). A bounded Zig task driver now connects providers to native context tools. Repository editing/execution, the task CLI, full verification/resume, repository graph, sandbox, subagents, TUI, MCP, and ACP remain tracked work. This repository does not currently expose a complete autonomous coding agent or claim competitive benchmark performance.
+The complete release contract is in [docs/PLAN.md](docs/PLAN.md). A bounded Zig task driver connects providers to native context tools and optional host-granted repository reads/version-checked replacements. Isolated execution, complete editing/Git workflows, the task CLI, full verification/resume, repository graph, sandbox, subagents, TUI, MCP, and ACP remain tracked work. This repository does not currently expose a complete autonomous coding agent or claim competitive benchmark performance.
 
 ## Keep the project context across turns
 
@@ -20,6 +20,8 @@ The log command appends under a file lock and synchronizes the file. The continu
 
 Git history and an explicitly requested Codex memory note provide additional discovery/recovery pointers. These records survive chat compaction; they are not a guarantee against filesystem loss. No cloud backup is silently configured.
 
+The current physical workspace is `/Users/utkarshrajput/Library/Application Support/Local AI Workspaces/ChatGPT/Harness`; the Documents compatibility path resolves there. Keep new AI work and generated files in local storage as specified in `AGENTS.md`.
+
 ## Build
 
 Use **Zig 0.17.0**, pinned in `.zigversion`. The first-party implementation and tests are Zig. The bundled, unchanged SQLite C library is a native dependency; no Python or npm runtime is required. Dependency origin, checksums, build flags, and acquisition details are in [the dependency record](docs/research/dependencies.md).
@@ -27,6 +29,7 @@ Use **Zig 0.17.0**, pinned in `.zigversion`. The first-party implementation and 
 ```sh
 zig build
 zig build test --summary all
+zig build test-build -Dtarget=x86_64-linux-musl -Doptimize=safe --prefix zig-out/linux-tests
 zig build check
 zig build run -- doctor
 zig build -Dtarget=x86_64-linux-musl -Doptimize=safe --prefix zig-out/linux
@@ -71,8 +74,10 @@ The default compiler uses conservative byte estimates, not measured Qwen tokeniz
 
 ## Verification and limits
 
-Native tests cover disk reopen, ID/content separation, invalid-batch rollback, protected requirements, tool/reasoning groups, three-tier restoration, refold versions, bounded retrieval, stale writers, corruption, foreign-database preservation and seeded mixed-operation regression. The latest integrated 30 October run passed **126/126 tests**, including the bounded driver, real loopback task execution, cancellation, budget/usage rules, allocation failures, schema migration and conservative interrupted-action recovery. [Task-driver evidence](docs/research/task-driver.md), [provider protocol evidence](docs/research/provider-protocol.md) and the [historical foundation report](docs/evidence/2026-10-30-verification.md) record exact scope and source hashes.
+Native tests cover disk reopen, ID/content separation, invalid-batch rollback, protected requirements, tool/reasoning groups, three-tier restoration, refold versions, bounded retrieval, stale writers, corruption, foreign-database preservation and seeded mixed-operation regression. The latest integrated 1 November run passed **144/144 tests**, including the bounded driver, scoped repository reads/replacements/undo, native metadata preservation, real SIGKILL recovery at two edit boundaries, loopback task execution, cancellation, budget/usage rules, allocation failures and schema migration. [Repository-editing evidence](docs/research/repository-editing.md), [task-driver evidence](docs/research/task-driver.md), [provider protocol evidence](docs/research/provider-protocol.md) and the [historical foundation report](docs/evidence/2026-10-30-verification.md) record exact scope and source hashes. Linux test binaries build/link successfully but have not been executed.
 
-The exported `provider_request`/`provider_stream` modules encode bounded Chat Completions requests and validate complete SSE replies, reasoning, tool groups and usage. `provider_http` supports a single explicit request with cancellation/deadline and typed rejection, without automatic retry/redirect. `context_tools` exposes strict native `inspect`/`act` operations and whole-burst preparation; file `patch` and model rule authority are not advertised. `task` and `agent` add the durable bounded SDK driver, with request/action journals, registered requirement protection and conservative recovery. `CommittedResultUnavailable` requires inspection and must never trigger automatic replay. A model stop awaits independent verification. Live inference, full task CLI/coding effects, general resume, UI deltas and complete input/delegation/cost accounting remain unfinished.
+The exported `provider_request`/`provider_stream` modules encode bounded Chat Completions requests and validate complete SSE replies, reasoning, tool groups and usage. `provider_http` supports a single explicit request with cancellation/deadline and typed rejection, without automatic retry/redirect. `context_tools` exposes strict native `inspect`/`act` operations and whole-burst preparation; attaching `agent.Options.repository` adds granted file reads and, with write grants, replacement preview/`patch`. The model cannot grant itself paths, rule authority or recovery acknowledgement. `task` and `agent` add the durable bounded SDK driver, with request/action journals, registered requirement protection and conservative recovery. `CommittedResultUnavailable` requires inspection and must never trigger automatic replay. A model stop awaits independent verification. Live inference, isolated commands, full task CLI/coding workflows, general resume, UI deltas and complete input/delegation/cost accounting remain unfinished.
+
+Repository edits retain displaced inodes and durable per-file progress. Multi-file publication is not globally atomic; a writer racing the last check can be detected after the target path has changed, with its bytes retained at the recovery name. Exact-path grants are capabilities, not an OS sandbox. Read the [publication and recovery contract](docs/research/repository-editing.md) before embedding the API.
 
 The current cloud budget is **US$7 total**. Construction is local; official benchmarks and paid model experiments are later work. Passing local context tests does not establish full-harness readiness, summary quality, billion-token scaling, or an improvement over Hermes, Pi, Codex, Claude Code, or OpenCode.

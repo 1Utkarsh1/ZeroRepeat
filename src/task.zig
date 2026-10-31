@@ -5,6 +5,7 @@ const sqlite = @import("db.zig");
 const Allocator = std.mem.Allocator;
 
 pub const State = enum { pending, running, awaiting_verification, failed, canceled, attention, budget_exhausted };
+pub const Effect = struct { mutating: bool, management: bool };
 
 pub const Limits = struct {
     requests: u32 = 16,
@@ -213,20 +214,24 @@ pub const Journal = struct {
     }
 
     /// All plans are validated before this reservation or any action start.
-    pub fn planActions(self: Journal, request: i64, calls: []const stream.ToolCall, mutating: []const bool) !void {
-        if (calls.len == 0 or calls.len != mutating.len) return error.InvalidActionPlan;
+    pub fn planActions(self: Journal, request: i64, calls: []const stream.ToolCall, effects: []const Effect) !void {
+        if (calls.len == 0 or calls.len != effects.len) return error.InvalidActionPlan;
         try self.db().exec("BEGIN IMMEDIATE;");
         errdefer self.db().exec("ROLLBACK;") catch {};
         const id = try self.requestTask(request, "replied");
         const state = try self.get(id);
-        const management = std.mem.indexOfScalar(bool, mutating, true) != null;
+        var management = false;
+        for (effects) |effect| {
+            if (effect.management and !effect.mutating) return error.InvalidActionPlan;
+            management = management or effect.management;
+        }
         if (calls.len > state.limits.tool_calls -| state.tool_calls or
             (management and state.management_rounds >= state.limits.management_rounds)) return error.TaskBudgetExceeded;
         if (try self.db().number("SELECT count(*) FROM actions WHERE request_id=?;", &.{.{ .int = request }}) != 0) return error.ActionsAlreadyPlanned;
-        for (calls, mutating, 0..) |call, writes, position| {
+        for (calls, effects, 0..) |call, effect, position| {
             const hash = try self.ctx.putBlob(call.arguments);
-            try self.db().run("INSERT INTO actions(request_id,position,provider_id,name,arguments,mutating,phase) VALUES(?,?,?,?,?,?,'planned');", &.{
-                .{ .int = request }, .{ .int = @intCast(position) }, .{ .text = call.id }, .{ .text = call.name }, .{ .blob = &hash }, .{ .int = @intFromBool(writes) },
+            try self.db().run("INSERT INTO actions(request_id,position,provider_id,name,arguments,mutating,management,phase) VALUES(?,?,?,?,?,?,?,'planned');", &.{
+                .{ .int = request }, .{ .int = @intCast(position) }, .{ .text = call.id }, .{ .text = call.name }, .{ .blob = &hash }, .{ .int = @intFromBool(effect.mutating) }, .{ .int = @intFromBool(effect.management) },
             });
         }
         try self.db().run("UPDATE model_requests SET management=? WHERE id=?;", &.{ .{ .int = @intFromBool(management) }, .{ .int = request } });

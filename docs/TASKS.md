@@ -13,6 +13,7 @@ Status: `[ ]` pending, `[-]` in progress, `[x]` verified for the stated scope. E
 - [x] Add typed request encoding with preserved reasoning, complete parallel tool groups, exact byte limits and allocation-failure tests; integrate the actual context-tool schemas.
 - [x] Add native HTTP/SSE transport with real local-server fixtures, typed rejection handling, no automatic redirects/retries, absolute deadlines and caller cancellation; verify a native context mutation through HTTP.
 - [x] Add a bounded native context-tool task driver and durable request/action journal with whole-burst preflight, requirement/correction pins, cancellation, request/tool/management/wire/output/time caps, unknown-usage reservations and conservative owner-exit recovery. Locally verified; full coding effects and lifecycle remain open.
+- [x] Add capability-rooted file snapshots, scoped version refs, replacement previews/apply and explicit undo through the same native driver. Verify metadata preservation, retained recovery inodes, stale checks, partial multi-file failure, allocation/receipt failures and real SIGKILL at two boundaries; 144/144 integrated tests pass. This is the scoped repository component, not complete ZR-05/06/10/12.
 - [x] Preserve all 70 baseline coverage IDs/kinds and prevent incomplete required work or unresolved reference audits from passing the release gate.
 - [x] Finish current smoke/evidence and verified Git/bundle checkpoint outside cloud-managed Documents; restore a clone, verify source/plan hashes, continuity and Git integrity, and preserve original Git/placeholder files.
 - [-] Complete native integration through the actual bounded provider/task loop, provider history reconstruction, session binding, pending-job protection, and crash/disk-failure verification. The foundation is not the full integration or full harness.
@@ -21,8 +22,8 @@ Status: `[ ]` pending, `[-]` in progress, `[x]` verified for the stated scope. E
 ## Complete harness roadmap — all retained
 
 - [-] M0: contract, complete reference feature audit/corpus manifest, coverage gate, source evidence and reproducible dependencies. Pinned native dependencies and baseline checks are verified; remaining reference audits are open.
-- [-] M1: headless task loop, provider transport/request codecs, inspect/act/patch, isolated execution, streaming/cancellation/budgets. The native driver, context dispatch and HTTP path are verified locally; repository effects, complete input/delegation/cost budgets, live endpoint compatibility and end-to-end coding remain open.
-- [ ] M2: full objects/ledger/sessions/branches/jobs/replay, expected-version editing, migrations/backup/retention and crash recovery.
+- [-] M1: headless task loop, provider transport/request codecs, inspect/act/patch, isolated execution, streaming/cancellation/budgets. The native driver, context dispatch, scoped repository edits and HTTP path are verified locally; isolated execution, complete input/delegation/cost budgets, live endpoint compatibility and end-to-end coding remain open.
+- [-] M2: full objects/ledger/sessions/branches/jobs/replay, expected-version editing, migrations/backup/retention and crash recovery. Scoped file versions/edit journaling and two actual SIGKILL cases are verified; complete sessions, safe conflict UX, disk-full/power-loss, retention and general recovery remain open.
 - [-] M3: incremental repository index, L0/L1/L2 retrieval, output handling, compiler/residency/re-entry. Native history folding/retrieval is verified; repository and residency contracts remain open.
 - [ ] M4: memory/skills/evidence-based learning, subagents/branches, plugins/MCP and full effect-boundary policy.
 - [-] M5: TUI/plain task CLI/headless events/complete SDK/ACP, configuration/export/packaging/documentation. Development context CLI and component exports exist; full interfaces remain pending.
@@ -31,7 +32,7 @@ Status: `[ ]` pending, `[-]` in progress, `[x]` verified for the stated scope. E
 
 ## Exact next work
 
-Extend the native bounded driver with repository inspection and expected-version editing, then established isolated execution and the complete inspect/edit/test/repair/verify workflow. Keep intent/start/result journaling at the common effect boundary. Add safe reconciliation/resume and task CLI/events, independent verification, pending-job protection, model/session binding and exact full-request input/delegation/cost budgets. Do not retry an uncertain action. See `research/task-driver.md` for what the current component actually verifies.
+Add policy-backed isolated command execution and bounded result capture to the native driver, then the complete inspect/edit/test/repair/verify workflow. Keep intent/start/result journaling at the common effect boundary. Add safe reconciliation/resume and task CLI/events, independent verification, pending-job protection, model/session binding and exact full-request input/delegation/cost budgets. Preserve unified diffs/create/delete/rename, shared-workspace conflict handling and Git/index/LSP requirements. Do not retry an uncertain action. See `research/repository-editing.md` and `research/task-driver.md` for what the current components actually verify.
 
 ## Per-turn discipline
 

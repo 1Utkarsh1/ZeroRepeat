@@ -1,0 +1,170 @@
+Read AGENTS.md and docs/PLAN.md for the complete release contract. This context is a re-entry aid; inspect current Git/files/tests before trusting old status.
+
+--- docs/STATE.md ---
+# ZeroRepeat durable working context
+
+Updated: 2026-11-01, Australia/Sydney.
+
+## Goal and locked decisions
+
+Build the complete Zig coding harness in `PLAN.md`, optimized for correctness, time to correct solution, and tokens to correct solution. Preserve its full scope across turns and compaction. The active request also requires durable memory/context, a task list, every-turn rough logging, and native adoption of useful billion-context mechanisms.
+
+- All first-party implementation and tests are Zig; no Python implementation or prototype.
+- Zig 0.17.0; native SQLite/Tree-sitter C dependencies and Zig BLAKE3.
+- Reference model: `Qwen/Qwen3.8-27B`. Cloud budget: US$7 total. Build locally first; paid validation and competitive benchmarks come later.
+- Initial platforms: macOS ARM64 and Linux x86-64.
+- Omitted source must actually be available to the next inference. A stored reference, earlier exposure, or a cache assumption is insufficient.
+- Preserve user data and stale-edit checks; never automatically replay uncertain mutations.
+
+## GitHub checkpoints
+
+The public repository is https://github.com/1Utkarsh1/ZeroRepeat, configured as `origin`. The initial publication was verified at `275ea7296e481439b967aad173f658a20924fa03` on the default branch `Utkarsh/native-context-foundation`. Commit and push meaningful project checkpoints and before ending active work turns; compare the actual remote branch SHA with the intended local commit. Preserve history and report failures instead of force-pushing. The scoped personal instruction note is `/Users/utkarshrajput/.codex/memories/extensions/ad_hoc/notes/2026-10-29T230741Z-zerorepeat-github-checkpoints.md`. See `evidence/2026-10-30-github-publication.md`.
+
+Current tested implementation is being published as `native-repository-edits-2026-11-01`; exact current bytes are in `evidence/CURRENT_SOURCE.sha256`. The publication receipt records its commit and independent remote verification. Prior verified source: `8a0f2594c624eb251a12560a478c1da8040c34a9`, tagged `native-task-driver-2026-10-30`; its history and evidence remain retained.
+
+## Verified implementation and evidence
+
+- `PLAN.md` is byte-identical to the full supplied attachment; it remains the release contract. Foundation source checkpoint: `28e053d63f586185b4e12ef61ef951edc0c3fd59` on `Utkarsh/native-context-foundation`. Later checkpoints are tagged `native-provider-request-2026-10-30`, `native-provider-http-2026-10-30` and `native-task-driver-2026-10-30`; current implementation hashes are in `evidence/CURRENT_SOURCE.sha256`.
+- `COVERAGE.tsv` retains 70 baseline rows: 18 complete-harness subsystem contracts, 22 billion-context dispositions, 4 continuity requirements, and 26 research references. The native checker now rejects deletion or kind changes for every baseline ID, completion without a revision/evidence, unfinished required work, and unresolved reference audits at release. It validates evidence structure, not whether a claim is true.
+- Native SQLite C-ABI/storage, immutable BLAKE3 originals, distinct event identities, transactional hierarchical folding, protection/rules, versioned restoration, bounded retrieval/offloading, lexical BM25 search, and budget diagnostics work locally. One database is one namespace; global/cross-session binding remains open.
+- A native incremental Chat Completions SSE decoder assembles complete tool arguments, separates reasoning, validates usage, and rejects malformed/truncated streams before exposing calls. A typed request encoder preserves reasoning and complete tool exchanges, validates schemas/history, and bounds actual escaped bytes. Native HTTP transport sends one validated POST, decodes SSE, classifies bounded rejection responses and enforces deadline/caller cancellation.
+- The exported native task journal and bounded driver connect scripted/HTTP providers to typed context and optional repository tools. Durable requirements, requests, planned/started/result actions, output reservations, observed usage, failures and transient guidance are verified locally. Unknown outcomes enter attention; no automatic replay occurs. Model stop awaits independent verification. Schema version 3 migrates versions one/two transactionally, preserving source and prior action records. Productive file edits remain distinct from context-management accounting/history pruning. See `research/task-driver.md` and `research/repository-editing.md` for exact scope and limitations.
+- Native `inspect`/`act` dispatch supports status/search/retrieval/fold/expand/refold. Attaching a host-granted physical repository adds file paths/read/version; writable grants add replacement preview and `patch`. Exact-path capabilities, no-follow traversal, regular single-link checks, active-store protection and configured-key guards are verified. These checks are not an OS sandbox. Unknown/duplicate fields and privileged rule requests are rejected. `CommittedResultUnavailable` means inspect current state and never replay automatically.
+- File edits validate current refs/generation, UTF-8 byte ranges, metadata and all candidates before intent publication. Native metadata copying, sync, retained displaced inodes, per-file journal states and fresh version-checked undo are verified. Actual SIGKILL cases cover staged and post-exchange boundaries. Atomic exchange is not content CAS: a final-check racing writer's bytes are retained, but the target path can already change before attention is reported. Batches are not globally atomic. Shared-workspace isolation, conflict UX, unified diffs, create/delete/rename and Git/index/LSP remain open.
+- The public Zig module exports these components. Scripted/real loopback provider fixtures exercise real native folding, retrieval and task transitions; they are not real-model tests. The CLI still has no live task/model command.
+- Integrated native tests: **144/144 passed** (140 core, 2 CLI parser, 1 CLI subprocess, 1 process-recovery test), including 14 repository tests, three additional driver tests and actual SIGKILL fixtures. Reports: `evidence/2026-11-01-repository-native-tests.txt` and `research/repository-editing.md`. Historical reports remain preserved at their named revisions.
+- macOS native build and static Linux x86_64-musl `safe` build/link of the CLI, four test binaries and crash helper passed. Linux binaries have not been executed. The configured Docker context has an absent Colima socket; no daemon/container was started.
+- billion-context source was audited at `52567f19bd7846e3fb91d7513c949b0751cd1c47` (package 0.1.206, kernel 0.0.163). See `research/billion-context.md` for the 22-feature adoption map. Preserve the exact license's additional attribution term and both visible upstream links. Published savings were not reproduced.
+- The user-authorized personal memory note exists at `/Users/utkarshrajput/.codex/memories/extensions/ad_hoc/notes/2026-10-25T073047Z-zerorepeat-continuity.md`. It points back here; it does not replace these records.
+
+## Recovery and local environment
+
+The prior verified canonical recovery bundle is `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-task-2026-10-30.bundle`; its 22-hash task-driver restore remains retained. This checkpoint creates `zerorepeat-native-repository-2026-11-01.bundle` and an owned `restored-repository-2026-11-01` clone beside it, containing primary Git history and all four provider/task/repository tags. See the new publication receipt for actual restore/hash/continuity/fsck results; do not infer a successful backup from this intended filename.
+
+The physical project root is `/Users/utkarshrajput/Library/Application Support/Local AI Workspaces/ChatGPT/Harness`. `Documents/ChatGPT/Harness` resolves here through a compatibility symlink. New working files, outputs and scratch remain outside iCloud Drive; existing history and unrelated syncing are preserved.
+
+The working compiler is `/Users/utkarshrajput/.cache/zerorepeat/bootstrap/zig-aarch64-macos-0.17.0/zig`; native build cache is `/Users/utkarshrajput/.cache/zerorepeat/zig-local`. The current native binary is `/Users/utkarshrajput/.cache/zerorepeat/build/native/bin/zerorepeat`. Zig 0.17 uses `-Doptimize=safe`; `ReleaseSafe` is not an accepted option in this installed version.
+
+macOS dataless placeholders blocked reads of the old workspace toolchain, SQLite, some source files, and Git metadata. Exact pinned dependencies were reacquired and checksummed. `context.zig` was recovered from recorded edits and build files from recorded successful reads; original placeholder inodes remain under `.research/offloaded-originals/`. Current implementation source is readable and checksummed. Original `.git` is preserved. After metadata materialization, ordinary status completes and confirms no previous commits on main. Byte comparisons now also prove all recovered original source/build bytes match their preserved originals. A separate recovery Git directory is `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/harness.git`, used with this workspace as `--work-tree`. A complete recovery bundle at `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-context-2026-10-30.bundle` was verified and cloned to `restored-2026-10-30` beside it; all 15 source/dependency hashes, the original plan, continuity check and Git object integrity passed there. See the verification record for exact recovery commands. Tracked project source/history is now also published to the explicitly authorized public GitHub repository. Runtime data and local recovery files remain separate.
+
+No paid inference or cloud resources have been created during construction. No resource IDs or spend to reconcile; recorded project deployment spend is US$0. This is not a fresh account-wide billing audit.
+
+## Next concrete actions
+
+1. Add policy-backed isolated command execution and bounded result capture through M1's existing typed effect boundary, preserving durable intent/start/result records and uncertain-action rules.
+2. Pass the complete inspect → edit → test → repair → verify workflow locally. Expose task CLI/events, independent verification and safe explicit reconciliation/resume through that shared runtime. Extend editing with unified diffs/create/delete/rename, conflict UX and Git/index reconciliation.
+3. Keep auditing the remaining pinned reference features alongside implementation. Do not mark M0 or the full release complete from this component's results.
+
+## Open work and evidence boundaries
+
+All 18 full-harness subsystem contracts remain pending or in progress. Live HTTPS/model compatibility, provider variants/media, full verification/completion/resume, semantic graph, repository index/Tree-sitter/LSP, model residency/branch manifests, command/PTY/job lifecycle, sandbox/policy, complete editing/Git recovery, memory/skills, subagents, plugins/MCP, TUI/task CLI, complete SDK/ACP and distribution remain unfinished. Input-token/template/delegation/cost budgets and automatic pressure-triggered compaction remain open; current caps cover requests/tools/management rounds/wire bytes/output/time. Native projection does not implement pending jobs or general provider-history reconstruction. Cross-session references, disk-full/power-loss recovery, general crash recovery and complete accounting remain open. Two real process-kill edit boundaries and injected failure paths are tested; they do not prove every crash/persistence condition.
+
+No billion-token scale test, real-model summary-quality result, token/time savings result, official benchmark, or competitor parity result exists. Fuzzy/CJK/embedding retrieval and optional upstream transforms/steering are not claimed. The active goal and complete release remain **incomplete**.
+
+--- docs/TASKS.md ---
+# ZeroRepeat task list
+
+Status: `[ ]` pending, `[-]` in progress, `[x]` verified for the stated scope. Evidence and acceptance limits live in `COVERAGE.tsv` and the dated evidence records.
+
+## Active request
+
+- [x] Create the public GitHub repository, publish the verified history, and persist commit/push-at-checkpoint instructions.
+
+- [x] Save the full original plan, locked decisions, every-turn agreement, state/task/log records, and scoped personal memory pointer.
+- [x] Audit pinned billion-context source, license, persistence, compression/retrieval mechanisms, and tests; record 22 adoption dispositions and exclusions.
+- [x] Implement and locally verify the native context foundation: immutable originals, transactional folding, protected sources, restoration/refold, offloading/retrieval, lexical search, rules, and explicit overflow.
+- [x] Add a strict native streaming decoder and context tool dispatch; verify their connection with local protocol fixtures and uncertain-result error handling.
+- [x] Add typed request encoding with preserved reasoning, complete parallel tool groups, exact byte limits and allocation-failure tests; integrate the actual context-tool schemas.
+- [x] Add native HTTP/SSE transport with real local-server fixtures, typed rejection handling, no automatic redirects/retries, absolute deadlines and caller cancellation; verify a native context mutation through HTTP.
+- [x] Add a bounded native context-tool task driver and durable request/action journal with whole-burst preflight, requirement/correction pins, cancellation, request/tool/management/wire/output/time caps, unknown-usage reservations and conservative owner-exit recovery. Locally verified; full coding effects and lifecycle remain open.
+- [x] Add capability-rooted file snapshots, scoped version refs, replacement previews/apply and explicit undo through the same native driver. Verify metadata preservation, retained recovery inodes, stale checks, partial multi-file failure, allocation/receipt failures and real SIGKILL at two boundaries; 144/144 integrated tests pass. This is the scoped repository component, not complete ZR-05/06/10/12.
+- [x] Preserve all 70 baseline coverage IDs/kinds and prevent incomplete required work or unresolved reference audits from passing the release gate.
+- [x] Finish current smoke/evidence and verified Git/bundle checkpoint outside cloud-managed Documents; restore a clone, verify source/plan hashes, continuity and Git integrity, and preserve original Git/placeholder files.
+- [-] Complete native integration through the actual bounded provider/task loop, provider history reconstruction, session binding, pending-job protection, and crash/disk-failure verification. The foundation is not the full integration or full harness.
+- [ ] Prove real-model compaction/rehydration fidelity after local workflows work; no paid request during construction.
+
+## Complete harness roadmap — all retained
+
+- [-] M0: contract, complete reference feature audit/corpus manifest, coverage gate, source evidence and reproducible dependencies. Pinned native dependencies and baseline checks are verified; remaining reference audits are open.
+- [-] M1: headless task loop, provider transport/request codecs, inspect/act/patch, isolated execution, streaming/cancellation/budgets. The native driver, context dispatch, scoped repository edits and HTTP path are verified locally; isolated execution, complete input/delegation/cost budgets, live endpoint compatibility and end-to-end coding remain open.
+- [-] M2: full objects/ledger/sessions/branches/jobs/replay, expected-version editing, migrations/backup/retention and crash recovery. Scoped file versions/edit journaling and two actual SIGKILL cases are verified; complete sessions, safe conflict UX, disk-full/power-loss, retention and general recovery remain open.
+- [-] M3: incremental repository index, L0/L1/L2 retrieval, output handling, compiler/residency/re-entry. Native history folding/retrieval is verified; repository and residency contracts remain open.
+- [ ] M4: memory/skills/evidence-based learning, subagents/branches, plugins/MCP and full effect-boundary policy.
+- [-] M5: TUI/plain task CLI/headless events/complete SDK/ACP, configuration/export/packaging/documentation. Development context CLI and component exports exist; full interfaces remain pending.
+- [ ] M6: fuzzing/stress/profile/dogfood and real-model functional validation within US$7 after local construction.
+- [ ] Later funded stage: frozen official benchmarks, paired Qwen harness baselines, separate proprietary product comparisons, ablations, uncertainty and reproducible reports.
+
+## Exact next work
+
+Add policy-backed isolated command execution and bounded result capture to the native driver, then the complete inspect/edit/test/repair/verify workflow. Keep intent/start/result journaling at the common effect boundary. Add safe reconciliation/resume and task CLI/events, independent verification, pending-job protection, model/session binding and exact full-request input/delegation/cost budgets. Preserve unified diffs/create/delete/rename, shared-workspace conflict handling and Git/index/LSP requirements. Do not retry an uncertain action. See `research/repository-editing.md` and `research/task-driver.md` for what the current components actually verify.
+
+## Per-turn discipline
+
+- Read `AGENTS.md`, current state/tasks/latest log and full contract before changes; inspect actual files/Git/processes/results.
+- Append start/checkpoint/end records; update changed state and coverage without hiding pending requirements.
+- Commit and push project/continuity checkpoints to `origin`, including before ending a work turn; verify the remote SHA and report failures.
+- Save source revision, actual commands/results and limitations. Use source tools for complete repositories; REA for artifact/runtime questions that source cannot answer.
+- Keep the complete goal across compaction. A green component test or coverage structure check cannot establish full release readiness.
+
+--- docs/LOG.md (last <= 16384 bytes) ---
+
+## 2026-10-29 23:00:41 UTC — GitHub publishing request start
+
+New user instruction: continually push checkpoints to GitHub; if no repository exists, create one public. Re-read current STATE/TASKS/latest LOG and inspected actual Git. Working tree is clean on Utkarsh/native-context-foundation at 275ea72; no remote is configured. Existing tested source checkpoint is 28e053d, 79 native tests passed, local recovery bundle verified. Next: verify authenticated GitHub identity and repository absence, create public ZeroRepeat repository if needed, publish the existing verified history without force, verify remote HEAD, and persist commit/push-at-checkpoint instructions in the working agreement. This public publication is explicitly authorized; no cloud compute or paid model resources.
+
+## 2026-10-29 23:10:22 UTC — GitHub checkpoint and turn end
+
+Explicit user request handled: public repository https://github.com/1Utkarsh1/ZeroRepeat created under verified account 1Utkarsh1; origin configured and first push exited 0. GitHub API and ls-remote independently confirm initial remote commit 275ea7296e481439b967aad173f658a20924fa03 on default/upstream branch Utkarsh/native-context-foundation. The original live push was unblocked by materializing 102 Git files, preserving all Codex refs and source bytes. AGENTS, STATE, TASKS, README and MEM-01 acceptance/evidence now require commit/push at meaningful checkpoints and before work-turn handoff, with remote SHA verification and no force-push. Created the explicitly requested scoped persistent memory note at /Users/utkarshrajput/.codex/memories/extensions/ad_hoc/notes/2026-10-29T230741Z-zerorepeat-github-checkpoints.md. This final documentation checkpoint follows the verified first push and will be checked against the live remote after upload. Runtime code is unchanged; prior 79/79 native tests remain the applicable source evidence. Continuity audit passes; full release remains incomplete with 28 required items and 25 reference audits open. Next: M1 provider HTTP/request/task loop and then edit/test/repair; no paid inference or Runpod resources created.
+
+## 2026-10-29 23:14:55 UTC — Goal continuation start: native provider transport
+
+Previous goal turn classified as progress: created public GitHub repository, pushed and independently verified 8605d06, and persisted the checkpoint/push routine in project records and scoped memory. Re-read AGENTS/STATE/TASKS/LOG and full unchanged PLAN, inspected clean Git/upstream and live processes; no prior build/test/push remains live. Next: implement typed Chat Completions request construction and native Zig HTTP transport with local scripted-server tests, preserving validated streaming, tool groups, explicit errors and resource bounds. No live model calls, API credential discovery or paid Runpod resources; full harness scope and remaining release work stay intact.
+
+## 2026-10-29 23:27:56 UTC — Provider request codec checkpoint
+
+Added native typed Chat Completions request encoding, preserved reasoning aliases, complete tool-group validation, unique call IDs and actual escaped-byte limits. Shared tool-call validation now serves request/stream boundaries. Actual native context schemas pass wire integration. Integrated 88/88 tests passed; eight request-codec tests include allocation-failure sweeps, exact wire-size edges and incomplete/orphan/duplicate tool-group rejection. Reviewed official Qwen model card and pinned template at 1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0; this is source guidance, not model execution. Saving the native-provider-request-2026-10-30 checkpoint to GitHub before HTTP implementation. HTTP/task loop, complete provider history reconstruction and the full release remain open; no paid model calls or cloud resources.
+
+## 2026-10-29 23:50:59 UTC — Native HTTP transport checkpoint
+
+Implemented caller-owned native HTTP transport and real loopback Zig fixtures. Integrated 100/100 tests pass (97 core, 2 CLI parser, 1 subprocess), focused HTTP/request/stream 34/34 pass, native build/doctor pass and Linux HTTP test semantic cross-compilation passes; no Linux execution. The actual HTTP request carried compiled context and tool schemas; its validated response folded source while retaining the current requirement and exact retrievable nonce. One absolute deadline covers preflight/network; stalled headers/body and external cancellation release connections; redirects/retries are not automatic. Error bodies and response bytes are bounded; Retry-After is optional numeric advice, server raw diagnostics and durable accounting remain open. Corrected bracketed IPv6 loopback handling and error-parser OOM classification; regressions pass. The earlier request checkpoint 5b9cef9 and native-provider-request-2026-10-30 tag were independently verified on GitHub. Next: bounded headless task driver with durable events/usage/action safety, management-round caps and aggregate budgets, then repo edit/test workflow. Preparing native-provider-http-2026-10-30 checkpoint; full goal/release incomplete and cloud spend zero.
+
+## 2026-10-29 23:54:04 UTC — Goal turn end: native request and HTTP provider verified
+
+This continuation made implementation progress: typed request encoding and native HTTP/SSE transport now exist in Zig and are exercised through actual local TCP fixtures into a native fold/retrieval. Final integrated suite passed 100/100 (97 core, 2 CLI parser, 1 subprocess); focused transport/request/stream passed 34/34; native build/doctor and static Linux safe CLI cross-build passed; HTTP tests semantically cross-compiled for Linux. Exact commands/results and limits are in docs/research/provider-protocol.md and dated raw reports; CURRENT_SOURCE.sha256 anchors current source bytes. Deadline/cancellation cleanup and bounded response/rejection handling are verified locally. Linux execution, real HTTPS/model endpoints, UI streaming callbacks, durable provider diagnostics/accounting and the headless task/management loop remain open. No paid inference, model weights, Runpod resources or credentials were acquired. The source/records are being committed and pushed with native-provider-http-2026-10-30; remote equality is checked after the push, and local recovery snapshot will be refreshed. No required release item was falsely completed: 28 required items and 25 reference audits remain open. Goal stays active under the unchanged full PLAN. Next: durable bounded headless driver, management-round caps/aggregate budgets, then repository inspect/edit/test/repair with isolation.
+
+## 2026-10-30 00:01:10 UTC — Final provider evidence receipt and remote checkpoint
+
+GitHub API and Git transport verified 10f5e68f25ef97d8dbd904ca79d2479b43f96e9e for the branch and native-provider-http-2026-10-30 tag, with a clean worktree. Local recovery bundle was refreshed, restored by fast-forward, checked against all 18 CURRENT_SOURCE entries and current state/tasks/log, and passed continuity and Git fsck. Added explicit successful-command/exit-0 receipts to the two otherwise empty Linux semantic-compile output files so their scope is reviewable; runtime code is unchanged. This documentation-only receipt follows the verified source checkpoint and is pushed before handoff. Full goal remains active; next is the bounded durable task driver. No real model/HTTPS endpoint or paid compute was used.
+
+## 2026-10-30 00:16:25 UTC — Goal continuation start: durable bounded driver
+
+Previous goal turn classified as implementation progress: native typed requests and HTTP/SSE transport were added, verified with 100 integrated tests and real loopback context mutation, pushed through 8a1b6fc and source tags, and restored from the refreshed local bundle. Re-read AGENTS/STATE/TASKS/LOG and unchanged full attached PLAN; inspected actual Git/upstream and source. Next: add a durable bounded headless driver with task/request/action journaling, audit-only management records, budget limits and recovery that never repeats an uncertain effect. Study pinned reference event/projection boundaries where useful, use normal source tools for complete repositories, and retain every unimplemented release requirement. All validation stays local; no paid model or Runpod resource.
+
+## 2026-10-30 00:37:46 UTC — Durable driver local validation checkpoint
+
+Added native task/request/action journaling and bounded context-tool driver with typed/scripted and HTTP providers. Integrated tests pass 120/120 including real loopback two-request fold/stop, exact nonce retrieval after folding, whole-burst validation, output/wire/request/tool/management reservations, repeated failures, cancellation/deadline joining, credential echo rejection, v1-to-v2 migration, explicit owner-exit recovery and allocation-failure sweeps. Journal blobs intentionally grow even when an invalid burst leaves projection unchanged; corrected that test to compare actual projection rather than total storage bytes. Pinned Pi/dsh source review supports audit versus projection separation and conservative started-action recovery; no restricted code copied. Next: record scoped evidence, cross-compile, publish/verify GitHub checkpoint and refresh recovery bundle. Full task/coding lifecycle remains incomplete; no paid model or Runpod resource.
+
+## 2026-10-30 00:50:25 UTC — Bounded driver source and review checkpoint
+
+Final native suite passed 126/126 (123 core, 2 CLI parser, 1 subprocess), including 26 driver/journal regressions and allocation-failure sweeps. Independent source cross-check found ambiguous task-to-requirement binding in shared context; added explicit sorted requirement refs with full source bytes retained and a two-task regression. Review found no additional actionable defect within its stated boundary. Added attention-generation fencing and regression, fixed idempotent host cancellation, and verified migration/collision and incomplete/future schemas. Native build, static Linux safe CLI build and semantic cross-compilation of root tests pass; Linux runtime, real HTTPS/model, process-kill/disk-full and full input/delegation/cost budgets remain untested/open. Coverage audit passes with 70 rows; release intentionally fails with 28 required and 25 reference audits open. Preparing native-task-driver-2026-10-30 commit/tag/push, then a canonical Git recovery bundle. Full goal remains active; US$0 construction cloud spend.
+
+## 2026-10-30 00:51:51 UTC — Goal turn end: bounded driver published and recoverable
+
+Source checkpoint 8a0f2594c624eb251a12560a478c1da8040c34a9 and native-task-driver-2026-10-30 are pushed; GitHub API and ls-remote confirm exact branch/tag equality. Integrated 126/126 native tests pass, native/doctor/static Linux CLI build and Linux root-test semantic compile pass. Canonical complete-history bundle was verified and cloned; all 22 source/build/dependency hashes, current state/tasks/log, full original plan, continuity and Git fsck match. Saving documentation-only binary/restore receipts, then pushing and refreshing the canonical bundle/owned clone to the final head. Full release remains incomplete with 28 required items and 25 reference audits open; source-only reference review did not complete Pi/dsh audits. Exact next: repository reads and expected-version patches through the native driver, then policy/isolated execution and full inspect-edit-test-repair-verify, plus task CLI/safe resume and independent verification. Real model/HTTPS, Linux execution, process-kill/disk-full and full input/delegation/cost budgets remain open. No paid inference or Runpod resource; project construction spend US$0. Goal remains active.
+
+## 2026-10-30 00:55:18 UTC — Goal continuation start: repository inspection and versioned editing
+
+Previous goal turn classified as progress: native bounded task driver, durable action safety, 126 passing tests, public GitHub source/tag and canonical recovery bundle were implemented and verified. Re-read canonical records and full original PLAN, inspected clean ba44ced Git/files/processes; no prior build or push remains live. Next: native repository reads and expected-version edits through the same driver boundary, with rooted path checks, immutable before/after evidence, stale/concurrent change preservation and conservative recovery. Investigate native filesystem publication semantics before choosing the edit implementation. Keep full multi-file/diff/undo/isolation requirements visible and perform only local disposable-fixture validation; no paid model or Runpod resource.
+
+## 2026-10-31 15:45:38 UTC — Goal continuation start: local workspace and native repository effects
+
+Re-entry on 1 November: resolved Documents/ChatGPT/Harness to /Users/utkarshrajput/Library/Application Support/Local AI Workspaces/ChatGPT/Harness before writes. The compatibility path is a symlink into local storage, so existing history/files remain intact; unrelated iCloud syncing is unchanged. Previous partial turn yielded source evidence: rename-preserve differs from atomic exchange, Linux non-iterating directory fds may be O_PATH and unsuitable for sync, and atomic exchange is not content CAS. Its read-only worker stopped on a usage limit; no implementation or running job is inferred from it. Current Git is ba44ced with only that start log uncommitted. Next: implement capability-rooted snapshots and versioned edits with retained displaced inodes and durable records, attach them to the existing driver while keeping productive file edits separate from context-management accounting. No paid inference or cloud resources; full PLAN unchanged.
+
+## 2026-10-31 16:25:02 UTC — Repository effects checkpoint: native execution and real crash tests
+
+Implemented capability-rooted file snapshots, scoped version refs, bounded multi-file replacement previews/apply, metadata fingerprints/copy, retained displaced inodes and explicit versioned undo. The native driver now advertises repository tools only when attached and separates productive mutations from context-management accounting/history pruning. Integrated tests passed 140/140 (136 core, 2 parser, 1 CLI process, 1 process-recovery test). Actual owned child processes were SIGKILLed at staged and post-exchange boundaries; source/recovery bytes and no-replay gates survived reopen. Race injection preserves concurrent writer bytes at the retained name and reports attention; atomic exchange is not content CAS and the target path can already change. macOS provenance attributes exposed the need for native metadata copy; configured-secret checks precede new source/candidate blob publication. Linux cross-build work is running; local Docker CLI points to a missing Colima socket, so no Linux container or daemon was started. Next: final fault/trust-boundary checks, honest evidence/continuity updates and GitHub checkpoint. No cloud spend.
+
+## 2026-10-31 20:00:18 UTC — Goal continuation: publish native repository checkpoint
+
+Previous goal turn classified as progress: implemented rooted repository effects and actual SIGKILL recovery fixtures; the final native run now confirms 144/144 tests. Re-read canonical records, original plan and source workflow, verified local physical workspace and actual uncommitted source/evidence. No prior docs patch applied. Next: update current state/coverage, freeze exact source hashes, verify native/Linux build receipts, commit/tag/push and compare GitHub SHA, then refresh a complete-history recovery bundle. Full release remains incomplete; no paid model or cloud resources.
+

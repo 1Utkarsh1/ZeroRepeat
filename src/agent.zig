@@ -5,6 +5,7 @@ const wire = @import("provider_request.zig");
 const stream = @import("provider_stream.zig");
 const http = @import("provider_http.zig");
 const tools = @import("context_tools.zig");
+const repository = @import("repository.zig");
 const Allocator = std.mem.Allocator;
 const Io = std.Io;
 
@@ -39,6 +40,7 @@ pub const Options = struct {
     reasoning_field: wire.ReasoningField = .reasoning_content,
     request_limits: wire.Limits = .{},
     stream_limits: stream.Limits = .{},
+    repository: ?*repository.Repository = null,
 };
 
 const Prompt = struct {
@@ -52,8 +54,9 @@ const Prompt = struct {
     }
 };
 
-/// This driver advertises native context tools only; repository effects join at the same boundary later.
+/// Repository effects use the same bounded driver when the host grants a repository capability.
 pub fn run(ctx: *context.Context, allocator: Allocator, io: Io, id: i64, provider: Provider, options: Options) !task.Snapshot {
+    if (options.repository) |repo| if (repo.ctx != ctx) return error.RepositoryMismatch;
     if (provider.secret) |secret| if (secret.len == 0) return error.InvalidCredential;
     try options.stream_limits.validate();
     try io.checkCancel();
@@ -120,19 +123,19 @@ fn runLoop(ctx: *context.Context, allocator: Allocator, io: Io, id: i64, provide
         defer allocator.free(prepared);
         var count: usize = 0;
         defer for (prepared[0..count]) |*plan| plan.deinit();
-        const mutating = try allocator.alloc(bool, reply.tools.len);
-        defer allocator.free(mutating);
-        for (reply.tools, prepared, mutating) |call, *plan, *writes| {
-            plan.* = try tools.prepare(allocator, .{ .name = call.name, .arguments = call.arguments });
+        const effects = try allocator.alloc(task.Effect, reply.tools.len);
+        defer allocator.free(effects);
+        for (reply.tools, prepared, effects) |call, *plan, *effect| {
+            plan.* = try tools.prepareWithRepository(allocator, .{ .name = call.name, .arguments = call.arguments }, options.repository);
             count += 1;
-            writes.* = plan.mutating();
+            effect.* = .{ .mutating = plan.mutating(), .management = plan.management() };
         }
-        try journal.planActions(request, reply.tools, mutating);
+        try journal.planActions(request, reply.tools, effects);
         var generation = prompt.generation;
         for (prepared, 0..) |*plan, position| {
             _ = try remaining(journal, io, id, started);
             const action = try journal.startAction(request, position, generation);
-            var result = plan.apply(ctx, allocator) catch |err| {
+            var result = plan.applyGuarded(ctx, allocator, provider.secret, action) catch |err| {
                 if (err == error.CommittedResultUnavailable) return err;
                 const bytes = try std.json.Stringify.valueAlloc(allocator, .{ .@"error" = @errorName(err), .source = "native_tool" }, .{});
                 defer allocator.free(bytes);
@@ -169,7 +172,7 @@ fn compilePrompt(ctx: *context.Context, allocator: Allocator, id: i64, options: 
     try messages.append(a, .{ .role = .system, .content = try system.toOwnedSlice() });
     try messages.append(a, .{ .role = .user, .content = compiled.text });
     // Preserve every read exchange. Only superseded management chatter is excluded.
-    var requests = try ctx.database.statement("SELECT id,response,management,id=(SELECT max(id) FROM model_requests WHERE task_id=?) OR EXISTS(SELECT 1 FROM actions WHERE request_id=r.id AND mutating=0) FROM model_requests r WHERE task_id=? AND phase='replied' ORDER BY id;", &.{ .{ .int = id }, .{ .int = id } });
+    var requests = try ctx.database.statement("SELECT id,response,management,id=(SELECT max(id) FROM model_requests WHERE task_id=?) OR EXISTS(SELECT 1 FROM actions WHERE request_id=r.id AND management=0) FROM model_requests r WHERE task_id=? AND phase='replied' ORDER BY id;", &.{ .{ .int = id }, .{ .int = id } });
     defer requests.deinit();
     while (try requests.step()) {
         const bytes = try ctx.readBlob(a, requests.blob(1));
@@ -206,7 +209,7 @@ fn compilePrompt(ctx: *context.Context, allocator: Allocator, id: i64, options: 
     const input: wire.Request = .{
         .model = options.model,
         .messages = try messages.toOwnedSlice(a),
-        .tools_json = tools.tool_definitions,
+        .tools_json = if (options.repository) |repo| try tools.repositoryDefinitions(a, repo.hasWriteAccess()) else tools.tool_definitions,
         .max_tokens = @intCast(@min(state.limits.output_per_request, state.limits.output_tokens - state.output_charged)),
         .reasoning_field = options.reasoning_field,
     };

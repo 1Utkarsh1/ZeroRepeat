@@ -1,6 +1,6 @@
 # Native dependency provenance and verification
 
-Initially recorded 2026-10-25; verification refreshed 2026-10-30, Australia/Sydney. These are observed acquisition/build results, not performance measurements or a claim of bit-identical release binaries. The current commands below correct the earlier optimization flag spelling; this installed Zig 0.17 accepts `safe`, not `ReleaseSafe`.
+Initially recorded 2026-10-25; dependency verification refreshed 2026-10-30, Australia/Sydney. These are observed acquisition/build results, not performance measurements or a claim of bit-identical release binaries. The commands below correct the earlier optimization flag spelling; this installed Zig 0.17 accepts `safe`, not `ReleaseSafe`. Later 1 November verification passed 144 integrated tests and built/linked all Linux test binaries; see [repository-editing evidence](repository-editing.md). The 79-test results below remain the historical dependency checkpoint.
 
 ## SQLite
 
@@ -22,7 +22,7 @@ Primary sources: [official download products and CSV contract](https://www.sqlit
 
 ### Build contract
 
-`build.zig` compiles the amalgamation once as a static library for the requested Zig target, then links the same build artifact into the shared core, executable, and both test roots. It does not search for or link an installed `libsqlite3`.
+`build.zig` compiles the amalgamation once as a static library for the requested Zig target, then links the same build artifact into the shared core, executable and dependent test roots/helpers. It does not search for or link an installed `libsqlite3`.
 
 The only explicit SQLite C flags are:
 
@@ -71,3 +71,7 @@ Observed results:
 An earlier full test run exposed an allocator leak in a context stress test; arena-result ownership was fixed and the refreshed run passed. On 30 October, an initial compiler invocation blocked reading a dataless standard-library file before tests ran. Exact pinned archives were reacquired, checksums verified, original placeholder files preserved and source inputs recovered before the successful refreshed checks. See `../evidence/2026-10-30-verification.md` for raw reports, source hashes and recovery limits.
 
 No Linux executable was run on the macOS host. Linux runtime behavior, thread-contention stress, final release reproducibility, a model server, and official benchmarks remain separate verification work. No Docker or Runpod resource was created for these checks.
+
+## Native repository platform interfaces — 1 November
+
+`src/repository_fs.zig` uses the pinned Zig standard library and target libc/kernel interfaces; no new package dependency was added. macOS uses descriptor-based metadata/ACL copying, extended attributes, atomic exchange and full file synchronization through the installed SDK ABI. Linux uses statx metadata, descriptor xattrs and rename exchange. Native metadata fixtures run on macOS; Linux variants build/link only. Relevant primary manuals, pinned source findings, portability limits and commands are recorded in [repository-editing research](repository-editing.md). Runtime feature availability still needs Linux execution and sandbox integration; a successful cross-build does not establish either.

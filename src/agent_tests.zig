@@ -364,7 +364,7 @@ test "reopen and explicit recovery distinguish never-started actions from commit
             }));
             defer reply.deinit();
             try journal.recordReply(a, request, reply);
-            try journal.planActions(request, reply.tools, &.{ true, false });
+            try journal.planActions(request, reply.tools, &.{ .{ .mutating = true, .management = true }, .{ .mutating = false, .management = false } });
             try std.testing.expectError(error.UnfinishedActions, journal.startAction(request, 1, generation));
             try std.testing.expectError(error.UnfinishedActions, journal.reserveRequest(id, generation, payload, 4096));
             if (started) {
@@ -421,7 +421,7 @@ test "schema one migration preserves original bytes references generation and id
     }
     var ctx = try context.Context.open(path, config());
     defer ctx.close();
-    try std.testing.expectEqual(@as(i64, 2), try number(&ctx, "PRAGMA user_version;"));
+    try std.testing.expectEqual(@as(i64, 3), try number(&ctx, "PRAGMA user_version;"));
     try std.testing.expectEqual(@as(i64, 17), try ctx.generation());
     var view = try ctx.view(a);
     defer view.deinit();
@@ -688,7 +688,7 @@ test "owner-exit recovery invalidates a late context mutation using its earlier 
     var reply = try cloneReply(a, toolReply("late-action", &.{.{ .id = "call", .name = "act", .arguments = args }}));
     defer reply.deinit();
     try journal.recordReply(a, request, reply);
-    try journal.planActions(request, reply.tools, &.{true});
+    try journal.planActions(request, reply.tools, &.{.{ .mutating = true, .management = true }});
     _ = try journal.startAction(request, 0, generation);
     try journal.recoverAfterOwnerExit(id);
     try std.testing.expectError(error.StaleGeneration, @import("context_tools.zig").dispatch(&ctx, a, .{ .name = "act", .arguments = args }));
@@ -714,4 +714,94 @@ test "each task prompt names its registered requirement sources when multiple ta
         try std.testing.expect(std.mem.indexOf(u8, guidance, "not automatically additional task goals") != null);
         try std.testing.expect(std.mem.indexOf(u8, messages[1].object.get("content").?.string, "Separate task: do B") != null);
     }
+}
+
+test "the native driver reads patches and folds while productive edit evidence survives management projection" {
+    const repository = @import("repository.zig");
+    var tmp = std.testing.tmpDir(.{});
+    defer tmp.cleanup();
+    var path_buffer: [std.Io.Dir.max_path_bytes]u8 = undefined;
+    const root_length = try tmp.dir.realPath(io, &path_buffer);
+    try tmp.dir.writeFile(io, .{ .sub_path = "main.zig", .data = "old 🐈\r\n" });
+    var ctx = try fixture();
+    defer ctx.close();
+    var repo = try repository.Repository.open(&ctx, a, io, path_buffer[0..root_length], &.{.{ .path = "main.zig", .write = true }});
+    defer repo.close();
+    var base = try repo.read(a, "main.zig", null);
+    defer base.deinit(a);
+    const id = try create(&ctx, .{ .management_rounds = 1 });
+    const generation = try ctx.generation();
+    const patch = try std.json.Stringify.valueAlloc(a, .{ .op = "repo.apply", .scope = repo.scope, .generation = generation, .edits = .{.{ .path = "main.zig", .ref = "f1:v1", .replacements = .{.{ .start = 0, .end = 3, .text = "new" }} }} }, .{});
+    defer a.free(patch);
+    const fold = try compressArgs(generation + 1);
+    defer a.free(fold);
+    var script: Script = .{ .steps = &.{
+        .{ .reply = toolReply("read", &.{.{ .id = "read", .name = "inspect", .arguments = "{\"op\":\"repo.read\",\"path\":\"main.zig\"}" }}) },
+        .{ .reply = toolReply("patch", &.{.{ .id = "patch", .name = "patch", .arguments = patch }}) },
+        .{ .reply = toolReply("fold", &.{.{ .id = "fold", .name = "act", .arguments = fold }}) },
+        .{ .reply = toolReply("status", &.{.{ .id = "status", .name = "inspect", .arguments = "{\"op\":\"context.status\"}" }}) },
+        .{},
+    } };
+    defer script.deinit();
+    const state = try agent.run(&ctx, a, io, id, script.provider(), .{ .repository = &repo });
+    try std.testing.expectEqual(task.State.awaiting_verification, state.state);
+    try std.testing.expectEqual(@as(u64, 1), state.management_rounds);
+    const output = try tmp.dir.readFileAlloc(io, "main.zig", a, .limited(4096));
+    defer a.free(output);
+    try std.testing.expectEqualStrings("new 🐈\r\n", output);
+    try std.testing.expectEqual(@as(i64, 1), try number(&ctx, "SELECT count(*) FROM actions WHERE name='patch' AND mutating=1 AND management=0 AND phase='succeeded';"));
+    try std.testing.expectEqual(@as(i64, 1), try number(&ctx, "SELECT count(*) FROM edit_batches WHERE action_id IS NOT NULL AND state='applied';"));
+    try std.testing.expect(std.mem.indexOf(u8, script.payloads.items[1], "old 🐈") != null);
+    try std.testing.expect(std.mem.indexOf(u8, script.payloads.items[4], "f1:v2") != null);
+    try std.testing.expect(std.mem.indexOf(u8, script.payloads.items[4], "retained_displaced_name") != null);
+    const parsed = try std.json.parseFromSlice(std.json.Value, a, script.payloads.items[0], .{});
+    defer parsed.deinit();
+    try std.testing.expectEqual(@as(usize, 3), parsed.value.object.get("tools").?.array.items.len);
+}
+
+test "read-only repository schemas omit patch and model input cannot grant write permission" {
+    const repository = @import("repository.zig");
+    const tools = @import("context_tools.zig");
+    var tmp = std.testing.tmpDir(.{});
+    defer tmp.cleanup();
+    var path: [std.Io.Dir.max_path_bytes]u8 = undefined;
+    const length = try tmp.dir.realPath(io, &path);
+    try tmp.dir.writeFile(io, .{ .sub_path = "main.zig", .data = "old" });
+    var ctx = try fixture();
+    defer ctx.close();
+    var repo = try repository.Repository.open(&ctx, a, io, path[0..length], &.{.{ .path = "main.zig" }});
+    defer repo.close();
+    const definitions = try tools.repositoryDefinitions(a, repo.hasWriteAccess());
+    defer a.free(definitions);
+    const parsed = try std.json.parseFromSlice(std.json.Value, a, definitions, .{});
+    defer parsed.deinit();
+    try std.testing.expectEqual(@as(usize, 2), parsed.value.array.items.len);
+    try std.testing.expect(std.mem.indexOf(u8, definitions, "repo.apply") == null);
+    const patch = try std.json.Stringify.valueAlloc(a, .{ .op = "repo.apply", .scope = repo.scope, .generation = try ctx.generation(), .edits = .{.{ .path = "main.zig", .ref = "f1:v1", .replacements = .{.{ .start = 0, .end = 3, .text = "new" }} }} }, .{});
+    defer a.free(patch);
+    try std.testing.expectError(error.WriteDenied, tools.prepareWithRepository(a, .{ .name = "patch", .arguments = patch }, &repo));
+    try std.testing.expectError(error.UnsupportedOperation, tools.prepareWithRepository(a, .{ .name = "patch", .arguments = "{\"op\":\"context.status\"}" }, &repo));
+}
+
+test "a malformed later repository call prevents an earlier valid patch in the same burst" {
+    const repository = @import("repository.zig");
+    var tmp = std.testing.tmpDir(.{});
+    defer tmp.cleanup();
+    var root: [std.Io.Dir.max_path_bytes]u8 = undefined;
+    const length = try tmp.dir.realPath(io, &root);
+    try tmp.dir.writeFile(io, .{ .sub_path = "main.zig", .data = "old" });
+    var ctx = try fixture();
+    defer ctx.close();
+    var repo = try repository.Repository.open(&ctx, a, io, root[0..length], &.{.{ .path = "main.zig", .write = true }});
+    defer repo.close();
+    var base = try repo.read(a, "main.zig", null);
+    defer base.deinit(a);
+    const id = try create(&ctx, .{});
+    const patch = try std.json.Stringify.valueAlloc(a, .{ .op = "repo.apply", .scope = repo.scope, .generation = try ctx.generation(), .edits = .{.{ .path = "main.zig", .ref = "f1:v1", .replacements = .{.{ .start = 0, .end = 3, .text = "new" }} }} }, .{});
+    defer a.free(patch);
+    var script: Script = .{ .steps = &.{.{ .reply = toolReply("bad-burst", &.{ .{ .id = "valid", .name = "patch", .arguments = patch }, .{ .id = "invalid", .name = "inspect", .arguments = "{\"op\":\"repo.read\",\"path\":\"main.zig\",\"write\":true}" } }) }} };
+    defer script.deinit();
+    try std.testing.expectError(error.UnknownField, agent.run(&ctx, a, io, id, script.provider(), .{ .repository = &repo }));
+    try std.testing.expectEqual(@as(i64, 0), try number(&ctx, "SELECT count(*) FROM edit_batches;"));
+    try std.testing.expectEqual(@as(i64, 0), try number(&ctx, "SELECT count(*) FROM actions;"));
 }
