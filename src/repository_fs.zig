@@ -94,6 +94,25 @@ const attrs = if (os == .macos) struct {
     extern "c" fn fsetxattr(c_int, [*:0]const u8, [*]const u8, usize, c_int) c_int;
 };
 
+/// Private execution roots cannot inherit broader ACL permissions.
+pub fn requirePrivateDirectory(dir: Io.Dir, io: Io) !void {
+    const file = directoryFile(dir);
+    const info = try metadata(file, io);
+    if (info.stat.kind != .directory or info.uid != std.c.getuid() or info.stat.permissions.toMode() & 0o777 != 0o700) return error.InvalidScratchParent;
+    if (os == .macos) {
+        if (attrs.acl_get_fd_np(file.handle, 0x100)) |acl| {
+            _ = attrs.acl_free(acl);
+            return error.UnsupportedScratchAcl;
+        }
+        if (std.posix.errno(@as(c_int, -1)) != .NOENT) return error.MetadataUnavailable;
+    } else {
+        for ([_][:0]const u8{ "system.posix_acl_access", "system.posix_acl_default" }) |name| {
+            if (attrs.fgetxattr(file.handle, name, null, 0) >= 0) return error.UnsupportedScratchAcl;
+            if (std.posix.errno(@as(c_int, -1)) != .NODATA) return error.MetadataUnavailable;
+        }
+    }
+}
+
 pub fn writableMetadata(file: Io.File, io: Io) !Metadata {
     const info = try metadata(file, io);
     if (info.stat.kind != .file or info.stat.nlink != 1 or info.uid != std.c.getuid()) return error.UnsupportedFileMetadata;

@@ -217,7 +217,7 @@ test "task deadline reaches the command and failed action acknowledgement never 
     try std.testing.expectError(error.SqliteConstraint, agent.run(&ctx, a, io, second, fault.provider(), .{ .execution = &exec }));
     try std.testing.expectEqual(task.State.attention, (try (task.Journal{ .ctx = &ctx }).get(second)).state);
     try std.testing.expectError(error.TaskNotPending, agent.run(&ctx, a, io, second, fault.provider(), .{ .execution = &exec }));
-    const bytes = try roots.tmp.dir.readFileAlloc(io, "scratch/once", a, .limited(100));
+    const bytes = try exec.scratch.handle.readFileAlloc(io, "once", a, .limited(100));
     defer a.free(bytes);
     try std.testing.expectEqualStrings("once", bytes);
 }

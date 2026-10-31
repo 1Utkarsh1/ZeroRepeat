@@ -1,0 +1,146 @@
+case=child_hardlink sandbox_exit=0
+link_status=1
+write_status=0
+ln: /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_hardlink/scratch/link: Operation not permitted
+case=child_hardlink
+source_before /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_hardlink/workspace/source
+dev=16777230 ino=78515243 links=1 mode=100600 size=24
+bb4beca963a4e69abf4de7d05dc8ec71679a64de0cf851994fcaa9ebee65114d  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_hardlink/workspace/source
+           6f  72  69  67  69  6e  61  6c  2d  63  68  69  6c  64  5f  68
+           61  72  64  6c  69  6e  6b  0a                                
+
+workspace_dev=16777230 workspace_inode=78515241
+scratch_dev=16777230 scratch_inode=78515242
+sandbox_exit=0
+source_after /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_hardlink/workspace/source
+dev=16777230 ino=78515243 links=1 mode=100600 size=24
+bb4beca963a4e69abf4de7d05dc8ec71679a64de0cf851994fcaa9ebee65114d  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_hardlink/workspace/source
+           6f  72  69  67  69  6e  61  6c  2d  63  68  69  6c  64  5f  68
+           61  72  64  6c  69  6e  6b  0a                                
+
+alias_after /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_hardlink/scratch/link
+dev=16777230 ino=78515259 links=1 mode=100600 size=13
+baded42cbb899b3183cc93292b879ec4fe5b324b3b9f4c85ea204185949980d3  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_hardlink/scratch/link
+           63  68  69  6c  64  2d  77  72  69  74  74  65  6e            
+
+case=existing_hardlink sandbox_exit=0
+write_status=0
+case=existing_hardlink
+source_before /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_hardlink/workspace/source
+dev=16777230 ino=78515268 links=2 mode=100600 size=27
+7e6d702f7776719a5966829c920d6a2d89c44e2e859186dafe8aa19f731c0e7e  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_hardlink/workspace/source
+           6f  72  69  67  69  6e  61  6c  2d  65  78  69  73  74  69  6e
+           67  5f  68  61  72  64  6c  69  6e  6b  0a                    
+
+workspace_dev=16777230 workspace_inode=78515266
+scratch_dev=16777230 scratch_inode=78515267
+alias_before /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_hardlink/scratch/link
+dev=16777230 ino=78515268 links=2 mode=100600 size=27
+7e6d702f7776719a5966829c920d6a2d89c44e2e859186dafe8aa19f731c0e7e  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_hardlink/scratch/link
+           6f  72  69  67  69  6e  61  6c  2d  65  78  69  73  74  69  6e
+           67  5f  68  61  72  64  6c  69  6e  6b  0a                    
+
+sandbox_exit=0
+source_after /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_hardlink/workspace/source
+dev=16777230 ino=78515268 links=2 mode=100600 size=13
+baded42cbb899b3183cc93292b879ec4fe5b324b3b9f4c85ea204185949980d3  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_hardlink/workspace/source
+           63  68  69  6c  64  2d  77  72  69  74  74  65  6e            
+
+alias_after /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_hardlink/scratch/link
+dev=16777230 ino=78515268 links=2 mode=100600 size=13
+baded42cbb899b3183cc93292b879ec4fe5b324b3b9f4c85ea204185949980d3  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_hardlink/scratch/link
+           63  68  69  6c  64  2d  77  72  69  74  74  65  6e            
+
+case=child_symlink sandbox_exit=0
+link_status=0
+write_status=1
+sh: /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_symlink/scratch/link: Operation not permitted
+case=child_symlink
+source_before /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_symlink/workspace/source
+dev=16777230 ino=78515292 links=1 mode=100600 size=23
+135b58e9f5d06780d59a10558ab8badb5d7dc32d5c28c7ace63906cb61718bcf  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_symlink/workspace/source
+           6f  72  69  67  69  6e  61  6c  2d  63  68  69  6c  64  5f  73
+           79  6d  6c  69  6e  6b  0a                                    
+
+workspace_dev=16777230 workspace_inode=78515290
+scratch_dev=16777230 scratch_inode=78515291
+sandbox_exit=0
+source_after /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_symlink/workspace/source
+dev=16777230 ino=78515292 links=1 mode=100600 size=23
+135b58e9f5d06780d59a10558ab8badb5d7dc32d5c28c7ace63906cb61718bcf  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_symlink/workspace/source
+           6f  72  69  67  69  6e  61  6c  2d  63  68  69  6c  64  5f  73
+           79  6d  6c  69  6e  6b  0a                                    
+
+alias_after /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_symlink/scratch/link
+dev=16777230 ino=78515304 links=1 mode=120700 size=102
+/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_symlink/workspace/source
+target_dev=16777230 target_ino=78515292 target_links=1 target_size=23
+135b58e9f5d06780d59a10558ab8badb5d7dc32d5c28c7ace63906cb61718bcf  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/child_symlink/scratch/link
+           6f  72  69  67  69  6e  61  6c  2d  63  68  69  6c  64  5f  73
+           79  6d  6c  69  6e  6b  0a                                    
+
+case=existing_symlink sandbox_exit=0
+write_status=1
+sh: /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_symlink/scratch/link: Operation not permitted
+case=existing_symlink
+source_before /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_symlink/workspace/source
+dev=16777230 ino=78515317 links=1 mode=100600 size=26
+3defb39a702e184b3ed2bca57b8fc520877b8fd1afdf977986acf37dd0d2ee1e  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_symlink/workspace/source
+           6f  72  69  67  69  6e  61  6c  2d  65  78  69  73  74  69  6e
+           67  5f  73  79  6d  6c  69  6e  6b  0a                        
+
+workspace_dev=16777230 workspace_inode=78515315
+scratch_dev=16777230 scratch_inode=78515316
+alias_before /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_symlink/scratch/link
+dev=16777230 ino=78515318 links=1 mode=120700 size=105
+/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_symlink/workspace/source
+target_dev=16777230 target_ino=78515317 target_links=1 target_size=26
+3defb39a702e184b3ed2bca57b8fc520877b8fd1afdf977986acf37dd0d2ee1e  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_symlink/scratch/link
+           6f  72  69  67  69  6e  61  6c  2d  65  78  69  73  74  69  6e
+           67  5f  73  79  6d  6c  69  6e  6b  0a                        
+
+sandbox_exit=0
+source_after /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_symlink/workspace/source
+dev=16777230 ino=78515317 links=1 mode=100600 size=26
+3defb39a702e184b3ed2bca57b8fc520877b8fd1afdf977986acf37dd0d2ee1e  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_symlink/workspace/source
+           6f  72  69  67  69  6e  61  6c  2d  65  78  69  73  74  69  6e
+           67  5f  73  79  6d  6c  69  6e  6b  0a                        
+
+alias_after /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_symlink/scratch/link
+dev=16777230 ino=78515318 links=1 mode=120700 size=105
+/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_symlink/workspace/source
+target_dev=16777230 target_ino=78515317 target_links=1 target_size=26
+3defb39a702e184b3ed2bca57b8fc520877b8fd1afdf977986acf37dd0d2ee1e  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/existing_symlink/scratch/link
+           6f  72  69  67  69  6e  61  6c  2d  65  78  69  73  74  69  6e
+           67  5f  73  79  6d  6c  69  6e  6b  0a                        
+
+case=outside_existing_hardlink sandbox_exit=0
+write_status=0
+case=outside_existing_hardlink
+source_before /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/outside_existing_hardlink/outside
+dev=16777230 ino=78515343 links=2 mode=100600 size=35
+7f54f9f9e38dbe3d8e9e20f4592f7a1c57887f52959d70fd8a9ad114e2b94961  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/outside_existing_hardlink/outside
+           6f  72  69  67  69  6e  61  6c  2d  6f  75  74  73  69  64  65
+           5f  65  78  69  73  74  69  6e  67  5f  68  61  72  64  6c  69
+           6e  6b  0a                                                    
+
+workspace_dev=16777230 workspace_inode=78515341
+scratch_dev=16777230 scratch_inode=78515342
+alias_before /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/outside_existing_hardlink/scratch/link
+dev=16777230 ino=78515343 links=2 mode=100600 size=35
+7f54f9f9e38dbe3d8e9e20f4592f7a1c57887f52959d70fd8a9ad114e2b94961  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/outside_existing_hardlink/scratch/link
+           6f  72  69  67  69  6e  61  6c  2d  6f  75  74  73  69  64  65
+           5f  65  78  69  73  74  69  6e  67  5f  68  61  72  64  6c  69
+           6e  6b  0a                                                    
+
+sandbox_exit=0
+source_after /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/outside_existing_hardlink/outside
+dev=16777230 ino=78515343 links=2 mode=100600 size=13
+baded42cbb899b3183cc93292b879ec4fe5b324b3b9f4c85ea204185949980d3  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/outside_existing_hardlink/outside
+           63  68  69  6c  64  2d  77  72  69  74  74  65  6e            
+
+alias_after /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/outside_existing_hardlink/scratch/link
+dev=16777230 ino=78515343 links=2 mode=100600 size=13
+baded42cbb899b3183cc93292b879ec4fe5b324b3b9f4c85ea204185949980d3  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/outside_existing_hardlink/scratch/link
+           63  68  69  6c  64  2d  77  72  69  74  74  65  6e            
+

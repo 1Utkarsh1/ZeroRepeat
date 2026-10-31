@@ -1,0 +1,38 @@
+Build Summary: 20/20 steps succeeded
+test-build success
++- install success
+|  +- install zerorepeat success
+|     +- compile exe zerorepeat safe x86_64-linux-musl success 22s MaxRSS:255M
+|        +- WriteFile cached
+|        +- compile lib sqlite3 safe x86_64-linux-musl cached 55ms MaxRSS:30M
+|        +- compile lib sqlite3 safe x86_64-linux-musl (reused)
++- install test success
+|  +- compile test safe x86_64-linux-musl success 52s MaxRSS:780M
+|     +- WriteFile (reused)
+|     +- compile lib sqlite3 safe x86_64-linux-musl (reused)
+|     +- compile lib sqlite3 safe x86_64-linux-musl (reused)
++- install test success
+|  +- compile test safe x86_64-linux-musl success 19s MaxRSS:259M
+|     +- WriteFile (reused)
+|     +- compile lib sqlite3 safe x86_64-linux-musl (reused)
+|     +- compile lib sqlite3 safe x86_64-linux-musl (reused)
++- install test success
+|  +- compile test safe x86_64-linux-musl success 14s MaxRSS:235M
+|     +- options success
+|        +- compile exe zerorepeat safe x86_64-linux-musl (+3 more reused dependencies)
++- install test success
+|  +- compile test safe x86_64-linux-musl success 22s MaxRSS:254M
+|     +- WriteFile (reused)
+|     +- compile lib sqlite3 safe x86_64-linux-musl (reused)
+|     +- compile lib sqlite3 safe x86_64-linux-musl (reused)
+|     +- options cached
+|        +- compile exe repository-crash-fixture safe x86_64-linux-musl cached 74ms MaxRSS:31M
+|        |  +- WriteFile (reused)
+|        |  +- compile lib sqlite3 safe x86_64-linux-musl (reused)
+|        |  +- compile lib sqlite3 safe x86_64-linux-musl (reused)
+|        +- compile exe execution-network-fixture safe x86_64-linux-musl cached 58ms MaxRSS:31M
++- install repository-crash-fixture cached
+|  +- compile exe repository-crash-fixture safe x86_64-linux-musl (+3 more reused dependencies)
++- install execution-network-fixture cached
+   +- compile exe execution-network-fixture safe x86_64-linux-musl (reused)
+

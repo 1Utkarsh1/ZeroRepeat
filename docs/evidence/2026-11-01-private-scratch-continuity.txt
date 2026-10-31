@@ -1,0 +1,2 @@
+Coverage: 70 rows, 40 required, 13 complete, 28 required open, 25 reference audits open.
+Evidence paths checked; recorded results still require human/runtime verification.

@@ -1,0 +1,49 @@
+readonly_source_to_scratch=1
+parent_alias_to_scratch=1
+parent_alias_write=1
+explicit_readonly_to_scratch=1
+scratch_source_to_workspace=1
+internal_scratch_link=0
+internal_scratch_write=0
+ln: /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/private.9npZla/from_workspace: Operation not permitted
+ln: /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/alias: Operation not permitted
+sh: /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/alias: Operation not permitted
+ln: /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/private.9npZla/from_readonly: Operation not permitted
+ln: /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/workspace/from_scratch: Operation not permitted
+mode=100600 dev=16777230 ino=78522530 links=2 path=/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/workspace/source
+mode=100600 dev=16777230 ino=78522530 links=2 path=/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/alias
+mode=100600 dev=16777230 ino=78522531 links=1 path=/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/readonly/source
+mode=40700 dev=16777230 ino=78522529 links=2 path=/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/private.9npZla
+d44693dd5846bdd13252169f4083e356d54e179c91fa45b04fda80e76c45467a  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/workspace/source
+d44693dd5846bdd13252169f4083e356d54e179c91fa45b04fda80e76c45467a  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/alias
+d2e66006ec2915cedb5eb8868e696cfc889e32d1bf1277fb873fd9cb502c608e  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/readonly/source
+sandbox_exit=0
+mode=100600 dev=16777230 ino=78522530 links=2 path=/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/workspace/source
+mode=100600 dev=16777230 ino=78522530 links=2 path=/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/alias
+mode=100600 dev=16777230 ino=78522531 links=1 path=/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/readonly/source
+mode=100600 dev=16777230 ino=78522539 links=2 path=/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/private.9npZla/inside
+mode=100600 dev=16777230 ino=78522539 links=2 path=/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/private.9npZla/internal
+d44693dd5846bdd13252169f4083e356d54e179c91fa45b04fda80e76c45467a  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/workspace/source
+d44693dd5846bdd13252169f4083e356d54e179c91fa45b04fda80e76c45467a  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/alias
+d2e66006ec2915cedb5eb8868e696cfc889e32d1bf1277fb873fd9cb502c608e  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/readonly/source
+6d32bdbd2a00a6e69e0131e14f5a78c33a2f206fa67630cd413d479ecac74d20  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/private.9npZla/inside
+6d32bdbd2a00a6e69e0131e14f5a78c33a2f206fa67630cd413d479ecac74d20  /Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/private.9npZla/internal
+/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent:
+total 8
+drwx------@  4 utkarshrajput  staff  128 Nov  1 08:02 .
+drwx------@ 11 utkarshrajput  staff  352 Nov  1 08:02 ..
+-rw-------@  2 utkarshrajput  staff   15 Nov  1 08:02 alias
+drwx------@  4 utkarshrajput  staff  128 Nov  1 08:02 private.9npZla
+
+/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/parent/private.9npZla:
+total 16
+drwx------@ 4 utkarshrajput  staff  128 Nov  1 08:02 .
+drwx------@ 4 utkarshrajput  staff  128 Nov  1 08:02 ..
+-rw-------@ 2 utkarshrajput  staff   15 Nov  1 08:02 inside
+-rw-------@ 2 utkarshrajput  staff   15 Nov  1 08:02 internal
+
+/Users/utkarshrajput/.cache/zerorepeat/execution-hardlink-review.vwxOcU/fresh_child_contract/workspace:
+total 8
+drwx------@  3 utkarshrajput  staff   96 Nov  1 08:02 .
+drwx------@ 11 utkarshrajput  staff  352 Nov  1 08:02 ..
+-rw-------@  2 utkarshrajput  staff   15 Nov  1 08:02 source

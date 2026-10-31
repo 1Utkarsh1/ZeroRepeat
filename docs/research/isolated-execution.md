@@ -1,10 +1,12 @@
 # Native isolated execution and retained results
 
+**Correction:** the original factory at this tag accepted existing scratch trees. A reproduced pre-existing-hardlink bypass invalidated its blanket read-only guarantee. The later `native-private-scratch-2026-11-01` checkpoint creates fresh private scratch children under a caller-owned 0700 ACL-free parent; see [the correction, new SDK contract and native regressions](private-scratch.md). The 163-test results below remain historical; the corrected suite passes 170/170.
+
 Source revision: tag `native-isolated-execution-2026-11-01`. Exact source/build/dependency inputs are in `../evidence/CURRENT_SOURCE.sha256`. This extends repository checkpoint `835a358df78af72fd4b699cb4e5771f82b674146`; the frozen schema-three fixture was extracted from its own SQL declarations.
 
 ## Current contract
 
-The host attaches `agent.Options.execution` with an `Execution` capability bound to the same context database. If a repository is also attached, its root must match the execution workspace. The host supplies a physical read-only workspace, a separate writable scratch directory and optional physical read-only toolchain directories. Overlapping workspace/scratch roots, nonphysical roots, root replacement, reachable runtime SQLite stores and unsupported platform/backend combinations are rejected. Configured provider credentials are rejected in command arguments; output containing that credential is redacted before output blobs are committed. This is not detection of every possible project secret.
+The host attaches `agent.Options.execution` with an `Execution` capability bound to the same context database. If a repository is also attached, its root must match the execution workspace. The corrected host contract supplies a physical read-only workspace, a private scratch parent and optional physical read-only toolchain directories; only a newly created child becomes writable. Overlap, nonphysical/replaced roots, reachable SQLite stores and unsupported backend combinations are rejected. Configured credentials are rejected in arguments and redacted from output before blob publication; this is not detection of every project secret.
 
 The model can discover `inspect exec.policy`, invoke `act exec.run` and page stored output with `inspect exec.read`. Run/read operations require the database scope; mutations also require the current generation. Executables are absolute and argv is bounded to 256 strings and 64 KiB combined. Timeout is bounded by host policy and the task's fixed remaining deadline. The model cannot select a backend, grant paths, change environment, enable network or acknowledge uncertainty. Whole-burst validation precedes commands.
 

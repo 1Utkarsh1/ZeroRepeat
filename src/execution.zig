@@ -10,6 +10,7 @@ const Allocator = std.mem.Allocator;
 pub const Backend = enum { seatbelt, bubblewrap };
 pub const Config = struct {
     workspace: []const u8,
+    /// Caller-owned 0700 parent; the runtime grants a fresh private child, never this tree.
     scratch: []const u8,
     read_only: []const []const u8 = &.{},
     backend: Backend = if (builtin.os.tag == .macos) .seatbelt else .bubblewrap,
@@ -25,6 +26,8 @@ pub const Execution = struct {
     io: Io,
     arena: std.heap.ArenaAllocator,
     workspace: Directory,
+    scratch_parent: Directory,
+    scratch_name: []const u8,
     scratch: Directory,
     read_only: []const Directory,
     backend: Backend,
@@ -42,29 +45,49 @@ pub const Execution = struct {
         const a = arena.allocator();
         const workspace = try openDirectory(ctx, a, io, config.workspace);
         errdefer workspace.handle.close(io);
-        const scratch = try openDirectory(ctx, a, io, config.scratch);
-        errdefer scratch.handle.close(io);
-        if (covers(workspace.path, scratch.path) or covers(scratch.path, workspace.path)) return error.OverlappingExecutionRoots;
+        const scratch_parent = try openDirectory(ctx, a, io, config.scratch);
+        errdefer scratch_parent.handle.close(io);
+        if (covers(workspace.path, scratch_parent.path) or covers(scratch_parent.path, workspace.path)) return error.OverlappingExecutionRoots;
+        try filesystem.requirePrivateDirectory(scratch_parent.handle, io);
         const grants = try a.alloc(Directory, config.read_only.len);
         var count: usize = 0;
         errdefer for (grants[0..count]) |grant| grant.handle.close(io);
         for (config.read_only, grants) |path, *grant| {
             grant.* = try openDirectory(ctx, a, io, path);
             count += 1;
-            if (covers(grant.path, scratch.path) or covers(scratch.path, grant.path)) return error.OverlappingExecutionRoots;
+            if (covers(grant.path, scratch_parent.path) or covers(scratch_parent.path, grant.path)) return error.OverlappingExecutionRoots;
         }
         var identity = try ctx.database.prepare("SELECT identity FROM identity WHERE id=1;");
         defer identity.deinit();
         if (!try identity.step()) return error.CorruptContent;
-        return .{ .ctx = ctx, .io = io, .arena = arena, .workspace = workspace, .scratch = scratch, .read_only = grants, .backend = config.backend, .timeout_ms = config.timeout_ms, .output_bytes = config.output_bytes, .scope = try a.dupe(u8, identity.text(0)) };
+        const scope = try a.dupe(u8, identity.text(0));
+        var random: [16]u8 = undefined;
+        try io.randomSecure(&random);
+        const name = try std.fmt.allocPrint(a, "run-{s}", .{std.fmt.bytesToHex(random, .lower)});
+        const path = try std.fmt.allocPrint(a, "{s}/{s}", .{ scratch_parent.path, name });
+        try scratch_parent.handle.createDir(io, name, .fromMode(0o700));
+        errdefer scratch_parent.handle.deleteDir(io, name) catch {};
+        const scratch = try openDirectory(ctx, a, io, path);
+        errdefer scratch.handle.close(io);
+        try filesystem.requirePrivateDirectory(scratch.handle, io);
+        return .{ .ctx = ctx, .io = io, .arena = arena, .workspace = workspace, .scratch_parent = scratch_parent, .scratch_name = name, .scratch = scratch, .read_only = grants, .backend = config.backend, .timeout_ms = config.timeout_ms, .output_bytes = config.output_bytes, .scope = scope };
     }
 
     pub fn close(self: *Execution) void {
         self.workspace.handle.close(self.io);
+        // Remove only our empty child; retain nonempty caches/artifacts and all parent data.
+        self.removeEmptyScratch();
         self.scratch.handle.close(self.io);
+        self.scratch_parent.handle.close(self.io);
         for (self.read_only) |grant| grant.handle.close(self.io);
         self.arena.deinit();
         self.* = undefined;
+    }
+
+    fn removeEmptyScratch(self: *Execution) void {
+        checkDirectory(self.io, self.scratch_parent) catch return;
+        checkDirectory(self.io, self.scratch) catch return;
+        self.scratch_parent.handle.deleteDir(self.io, self.scratch_name) catch {};
     }
 
     pub fn validate(self: *Execution, input: Input, secret: ?[]const u8) !void {
@@ -189,7 +212,10 @@ pub const Execution = struct {
 
     fn checkRoots(self: *Execution) !void {
         try checkDirectory(self.io, self.workspace);
+        try checkDirectory(self.io, self.scratch_parent);
         try checkDirectory(self.io, self.scratch);
+        try filesystem.requirePrivateDirectory(self.scratch_parent.handle, self.io);
+        try filesystem.requirePrivateDirectory(self.scratch.handle, self.io);
         for (self.read_only) |grant| try checkDirectory(self.io, grant);
         try privateStore(self.ctx, self.io, null);
     }

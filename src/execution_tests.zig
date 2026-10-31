@@ -34,11 +34,11 @@ test "deadline cleanup terminates a TERM-ignoring parent and its ordinary descen
     const program = "trap '' TERM; (/bin/sleep 0.2; printf alive > \"$TMPDIR/descendant\") & wait";
     const control = try shell(&exec, program, 2000, null);
     try std.testing.expectEqual(@as(i64, 0), control.term_value);
-    try roots.tmp.dir.deleteFile(io, "scratch/descendant");
+    try exec.scratch.handle.deleteFile(io, "descendant");
     const terminated = try shell(&exec, program, 50, null);
     try std.testing.expectEqual(execution.process.Reason.timed_out, terminated.reason);
     try io.sleep(.fromMilliseconds(300), .awake);
-    try std.testing.expectError(error.FileNotFound, roots.tmp.dir.openFile(io, "scratch/descendant", .{}));
+    try std.testing.expectError(error.FileNotFound, exec.scratch.handle.openFile(io, "descendant", .{}));
 }
 
 test "external cancellation publishes a known canceled result and kills its owned process group" {
@@ -191,6 +191,176 @@ test "bounded execution previews retain exact tail evidence for scoped paged ret
     try std.testing.expect(std.mem.indexOf(u8, result.text, "tail-evidence-nonce") != null);
 }
 
+test "fresh private scratch excludes preexisting hardlink aliases and preserves originals" {
+    var roots = try Roots.init();
+    defer roots.deinit();
+    const original = "protected workspace original\n";
+    const external = "protected external original\n";
+    try roots.tmp.dir.writeFile(io, .{ .sub_path = "workspace/source", .data = original });
+    try roots.tmp.dir.writeFile(io, .{ .sub_path = "outside", .data = external });
+    try roots.tmp.dir.hardLink("workspace/source", roots.tmp.dir, "scratch/source-alias", io, .{});
+    try roots.tmp.dir.hardLink("outside", roots.tmp.dir, "scratch/outside-alias", io, .{});
+    const before = try roots.tmp.dir.statFile(io, "workspace/source", .{});
+    const alias_before = try roots.tmp.dir.statFile(io, "scratch/source-alias", .{});
+    try std.testing.expectEqual(before.inode, alias_before.inode);
+    try std.testing.expectEqual(@as(u64, 2), before.nlink);
+    var ctx = try context.Context.open(":memory:", .{});
+    defer ctx.close();
+    var exec = try roots.open(&ctx);
+    defer exec.close();
+    try std.testing.expect(!std.mem.eql(u8, roots.scratch, exec.scratch.path));
+    const mode = (try exec.scratch.handle.stat(io)).permissions.toMode() & 0o777;
+    try std.testing.expectEqual(@as(std.posix.mode_t, 0o700), mode);
+    const result = try shell(&exec, "if printf changed > \"$TMPDIR/../source-alias\"; then exit 91; fi; " ++
+        "if printf changed > \"$TMPDIR/../outside-alias\"; then exit 92; fi; " ++
+        "if ln source \"$TMPDIR/new-link\"; then exit 93; fi; " ++
+        "printf owned-cache > \"$TMPDIR/cache\"; ln \"$TMPDIR/cache\" \"$TMPDIR/internal-alias\"; printf internal >> \"$TMPDIR/internal-alias\"", 2000, null);
+    try std.testing.expectEqualStrings("exit", result.term_kind);
+    try std.testing.expectEqual(@as(i64, 0), result.term_value);
+    const actual = try roots.tmp.dir.readFileAlloc(io, "workspace/source", a, .limited(100));
+    defer a.free(actual);
+    const outside = try roots.tmp.dir.readFileAlloc(io, "outside", a, .limited(100));
+    defer a.free(outside);
+    try std.testing.expectEqualStrings(original, actual);
+    try std.testing.expectEqualStrings(external, outside);
+    const after = try roots.tmp.dir.statFile(io, "workspace/source", .{});
+    try std.testing.expectEqual(before.inode, after.inode);
+    try std.testing.expectEqual(before.nlink, after.nlink);
+    const cache = try exec.scratch.handle.readFileAlloc(io, "cache", a, .limited(100));
+    defer a.free(cache);
+    try std.testing.expectEqualStrings("owned-cacheinternal", cache);
+}
+
+test "a reopened capability never adopts old scratch and retains nonempty artifacts" {
+    var roots = try Roots.init();
+    defer roots.deinit();
+    var ctx = try context.Context.open(":memory:", .{});
+    defer ctx.close();
+    var first_path: []u8 = undefined;
+    {
+        var first = try roots.open(&ctx);
+        defer first.close();
+        first_path = try a.dupe(u8, first.scratch.path);
+        const result = try shell(&first, "printf preserved > \"$TMPDIR/artifact\"", 1000, null);
+        try std.testing.expectEqual(@as(i64, 0), result.term_value);
+    }
+    defer a.free(first_path);
+    var second = try roots.open(&ctx);
+    defer second.close();
+    try std.testing.expect(!std.mem.eql(u8, first_path, second.scratch.path));
+    try std.testing.expectError(error.FileNotFound, second.scratch.handle.openFile(io, "artifact", .{}));
+    const artifact = try std.fmt.allocPrint(a, "{s}/artifact", .{first_path});
+    defer a.free(artifact);
+    const body = try std.Io.Dir.cwd().readFileAlloc(io, artifact, a, .limited(100));
+    defer a.free(body);
+    try std.testing.expectEqualStrings("preserved", body);
+}
+
+test "scratch parent permissions and replacement are checked before command intent" {
+    var roots = try Roots.init();
+    defer roots.deinit();
+    var ctx = try context.Context.open(":memory:", .{});
+    defer ctx.close();
+    var parent = try std.Io.Dir.openDirAbsolute(io, roots.scratch, .{ .iterate = true });
+    defer parent.close(io);
+    try parent.setPermissions(io, .fromMode(0o755));
+    try std.testing.expectError(error.InvalidScratchParent, roots.open(&ctx));
+    try parent.setPermissions(io, .fromMode(0o700));
+    var exec = try roots.open(&ctx);
+    defer exec.close();
+    try exec.scratch.handle.setPermissions(io, .fromMode(0o777));
+    try std.testing.expectError(error.InvalidScratchParent, shell(&exec, "printf should-not-run", 1000, null));
+    try std.testing.expectEqual(@as(i64, 0), try ctx.database.number("SELECT count(*) FROM execution_runs;", &.{}));
+}
+
+test "private scratch replacement fails before execution and close preserves the replacement" {
+    var roots = try Roots.init();
+    defer roots.deinit();
+    var ctx = try context.Context.open(":memory:", .{});
+    defer ctx.close();
+    var replacement: []u8 = undefined;
+    {
+        var exec = try roots.open(&ctx);
+        defer exec.close();
+        replacement = try a.dupe(u8, exec.scratch.path);
+        try exec.scratch_parent.handle.rename(exec.scratch_name, exec.scratch_parent.handle, "retained-original-child", io);
+        try exec.scratch_parent.handle.createDir(io, exec.scratch_name, .fromMode(0o700));
+        try std.testing.expectError(error.ExecutionRootChanged, shell(&exec, "printf should-not-run", 1000, null));
+        try std.testing.expectEqual(@as(i64, 0), try ctx.database.number("SELECT count(*) FROM execution_runs;", &.{}));
+    }
+    defer a.free(replacement);
+    var preserved = try std.Io.Dir.openDirAbsolute(io, replacement, .{ .iterate = true });
+    defer preserved.close(io);
+}
+
+test "scratch parent ACLs are refused without modifying caller permissions or contents" {
+    if (builtin.os.tag != .macos) return error.SkipZigTest;
+    var roots = try Roots.init();
+    defer roots.deinit();
+    const change = try std.process.run(a, io, .{ .argv = &.{ "/bin/chmod", "+a", "everyone allow search", roots.scratch }, .stdout_limit = .limited(4096), .stderr_limit = .limited(4096) });
+    defer a.free(change.stdout);
+    defer a.free(change.stderr);
+    try std.testing.expect(change.term.success());
+    try roots.tmp.dir.writeFile(io, .{ .sub_path = "scratch/caller-data", .data = "retain" });
+    var ctx = try context.Context.open(":memory:", .{});
+    defer ctx.close();
+    try std.testing.expectError(error.UnsupportedScratchAcl, roots.open(&ctx));
+    const retained = try roots.tmp.dir.readFileAlloc(io, "scratch/caller-data", a, .limited(100));
+    defer a.free(retained);
+    try std.testing.expectEqualStrings("retain", retained);
+    const info = try roots.tmp.dir.statFile(io, "scratch", .{});
+    try std.testing.expectEqual(@as(std.posix.mode_t, 0o700), info.permissions.toMode() & 0o777);
+}
+
+test "private scratch construction allocation failures clean only their own empty directory" {
+    var roots = try Roots.init();
+    defer roots.deinit();
+    var ctx = try context.Context.open(":memory:", .{});
+    defer ctx.close();
+    try std.testing.checkAllAllocationFailures(a, openAndClose, .{ &ctx, &roots });
+    var parent = try std.Io.Dir.openDirAbsolute(io, roots.scratch, .{ .iterate = true });
+    defer parent.close(io);
+    var entries = parent.iterate();
+    try std.testing.expect(try entries.next(io) == null);
+}
+
+fn openAndClose(allocator: std.mem.Allocator, ctx: *context.Context, roots: *Roots) !void {
+    var exec = try execution.Execution.open(ctx, allocator, io, .{ .workspace = roots.workspace, .scratch = roots.scratch, .timeout_ms = 2000 });
+    defer exec.close();
+}
+
+test "secure entropy failure and private-name collision never adopt or remove caller data" {
+    var roots = try Roots.init();
+    defer roots.deinit();
+    var ctx = try context.Context.open(":memory:", .{});
+    defer ctx.close();
+    var hooks = io.vtable.*;
+    hooks.randomSecure = noEntropy;
+    var controlled = io;
+    controlled.vtable = &hooks;
+    try std.testing.expectError(error.EntropyUnavailable, execution.Execution.open(&ctx, a, controlled, .{ .workspace = roots.workspace, .scratch = roots.scratch }));
+    var parent = try std.Io.Dir.openDirAbsolute(io, roots.scratch, .{ .iterate = true });
+    defer parent.close(io);
+    var entries = parent.iterate();
+    try std.testing.expect(try entries.next(io) == null);
+    hooks.randomSecure = fixedEntropy;
+    var first = try execution.Execution.open(&ctx, a, controlled, .{ .workspace = roots.workspace, .scratch = roots.scratch });
+    defer first.close();
+    try first.scratch.handle.writeFile(io, .{ .sub_path = "owned", .data = "preserve-first" });
+    try std.testing.expectError(error.PathAlreadyExists, execution.Execution.open(&ctx, a, controlled, .{ .workspace = roots.workspace, .scratch = roots.scratch }));
+    const retained = try first.scratch.handle.readFileAlloc(io, "owned", a, .limited(100));
+    defer a.free(retained);
+    try std.testing.expectEqualStrings("preserve-first", retained);
+}
+
+fn noEntropy(_: ?*anyopaque, _: []u8) std.Io.RandomSecureError!void {
+    return error.EntropyUnavailable;
+}
+
+fn fixedEntropy(_: ?*anyopaque, bytes: []u8) std.Io.RandomSecureError!void {
+    @memset(bytes, 0);
+}
+
 pub const Roots = struct {
     tmp: std.testing.TmpDir,
     workspace: []u8,
@@ -201,7 +371,7 @@ pub const Roots = struct {
         var tmp = std.testing.tmpDir(.{});
         errdefer tmp.cleanup();
         try tmp.dir.createDir(io, "workspace", .default_dir);
-        try tmp.dir.createDir(io, "scratch", .default_dir);
+        try tmp.dir.createDir(io, "scratch", .fromMode(0o700));
         var bytes: [std.Io.Dir.max_path_bytes]u8 = undefined;
         const len = try tmp.dir.realPath(io, &bytes);
         const workspace = try std.fmt.allocPrint(a, "{s}/workspace", .{bytes[0..len]});
@@ -286,7 +456,7 @@ test "OS sandbox allows scratch but denies workspace mutations outside reads and
     const original = try roots.tmp.dir.readFileAlloc(io, "workspace/source", a, .limited(100));
     defer a.free(original);
     try std.testing.expectEqualStrings("source-nonce", original);
-    const scratch = try roots.tmp.dir.readFileAlloc(io, "scratch/allowed", a, .limited(100));
+    const scratch = try exec.scratch.handle.readFileAlloc(io, "allowed", a, .limited(100));
     defer a.free(scratch);
     try std.testing.expectEqualStrings("scratch", scratch);
 }
@@ -329,7 +499,7 @@ test "post-spawn receipt failure requires host review and never repeats the comm
     try ctx.database.exec("CREATE TRIGGER fail_exec_result BEFORE UPDATE OF stdout ON execution_runs BEGIN SELECT RAISE(ABORT,'fixture'); END;");
     try std.testing.expectError(error.ExecutionOutcomeUncertain, shell(&exec, "printf once >> \"$TMPDIR/counter\"", 2000, null));
     try std.testing.expectError(error.ExecutionNeedsReview, shell(&exec, "printf twice >> \"$TMPDIR/counter\"", 2000, null));
-    const counter = try roots.tmp.dir.readFileAlloc(io, "scratch/counter", a, .limited(100));
+    const counter = try exec.scratch.handle.readFileAlloc(io, "counter", a, .limited(100));
     defer a.free(counter);
     try std.testing.expectEqualStrings("once", counter);
     try exec.recoverAfterOwnerExit();

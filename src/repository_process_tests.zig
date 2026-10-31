@@ -9,7 +9,7 @@ test "the same native network fixture connects on the host and is denied inside 
     var tmp = std.testing.tmpDir(.{});
     defer tmp.cleanup();
     try tmp.dir.createDir(io, "workspace", .default_dir);
-    try tmp.dir.createDir(io, "scratch", .default_dir);
+    try tmp.dir.createDir(io, "scratch", .fromMode(0o700));
     var bytes: [std.Io.Dir.max_path_bytes]u8 = undefined;
     const len = try tmp.dir.realPath(io, &bytes);
     const workspace = try std.fmt.allocPrint(a, "{s}/workspace", .{bytes[0..len]});
@@ -45,7 +45,7 @@ test "isolated Zig compilation detects a real failing test and passes after a ve
     var tmp = std.testing.tmpDir(.{});
     defer tmp.cleanup();
     try tmp.dir.createDir(io, "workspace", .default_dir);
-    try tmp.dir.createDir(io, "scratch", .default_dir);
+    try tmp.dir.createDir(io, "scratch", .fromMode(0o700));
     var buffer: [std.Io.Dir.max_path_bytes]u8 = undefined;
     const len = try tmp.dir.realPath(io, &buffer);
     const workspace = try std.fmt.allocPrint(a, "{s}/workspace", .{buffer[0..len]});
@@ -56,10 +56,6 @@ test "isolated Zig compilation detects a real failing test and passes after a ve
     defer a.free(compiler);
     const source = "const std = @import(\"std\");\npub fn answer() u8 { return 41; }\ntest \"answer\" { try std.testing.expectEqual(@as(u8,42), answer()); }\n";
     try tmp.dir.writeFile(io, .{ .sub_path = "workspace/answer.zig", .data = source });
-    const local_cache = try std.fmt.allocPrint(a, "{s}/local-cache", .{scratch});
-    defer a.free(local_cache);
-    const global_cache = try std.fmt.allocPrint(a, "{s}/global-cache", .{scratch});
-    defer a.free(global_cache);
     var ctx = try core.context.Context.open(":memory:", .{});
     defer ctx.close();
     var repo = try core.repository.Repository.open(&ctx, a, io, workspace, &.{.{ .path = "answer.zig", .write = true }});
@@ -68,6 +64,10 @@ test "isolated Zig compilation detects a real failing test and passes after a ve
     defer before.deinit(a);
     var exec = try core.execution.Execution.open(&ctx, a, io, .{ .workspace = workspace, .scratch = scratch, .read_only = &.{std.fs.path.dirname(compiler).?}, .timeout_ms = 120000, .output_bytes = 65536 });
     defer exec.close();
+    const local_cache = try std.fmt.allocPrint(a, "{s}/local-cache", .{exec.scratch.path});
+    defer a.free(local_cache);
+    const global_cache = try std.fmt.allocPrint(a, "{s}/global-cache", .{exec.scratch.path});
+    defer a.free(global_cache);
     const command = &[_][]const u8{ compiler, "test", "answer.zig", "--cache-dir", local_cache, "--global-cache-dir", global_cache };
     const failed = try exec.run(a, .{ .generation = try ctx.generation(), .argv = command, .timeout_ms = 120000 }, null, null, null);
     const diagnostic = try exec.output(a, failed.id, true);
