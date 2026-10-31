@@ -17,7 +17,7 @@ Build the complete Zig coding harness in `PLAN.md`, optimized for correctness, t
 
 The public repository is https://github.com/1Utkarsh1/ZeroRepeat, configured as `origin`. The initial publication was verified at `275ea7296e481439b967aad173f658a20924fa03` on the default branch `Utkarsh/native-context-foundation`. Commit and push meaningful project checkpoints and before ending active work turns; compare the actual remote branch SHA with the intended local commit. Preserve history and report failures instead of force-pushing. The scoped personal instruction note is `/Users/utkarshrajput/.codex/memories/extensions/ad_hoc/notes/2026-10-29T230741Z-zerorepeat-github-checkpoints.md`. See `evidence/2026-10-30-github-publication.md`.
 
-Current tested source is being published as `native-private-scratch-2026-11-01`; exact inputs are in `evidence/CURRENT_SOURCE.sha256`. Prior execution source `918d4fafa48a58d28988071553abc46ed151d8f0` and final receipt `b898852c3676b8d840ee76f89536a241fbeb2588` remain retained. Their existing-scratch admission had a reproduced hardlink bypass; the new source corrects it. The publication receipt will record the exact new commit and remote verification.
+Latest tested implementation: `a600dc4ce13b32dd0be9fa873594da4ff9fe63d1`, tagged `native-private-scratch-2026-11-01`. Push exited 0; GitHub branch API and Git transport independently matched branch/tag. Exact inputs are in `evidence/CURRENT_SOURCE.sha256`; publication/restore details are in `evidence/2026-11-01-private-scratch-checkpoint.md`. Prior execution source `918d4fafa48a58d28988071553abc46ed151d8f0` and receipt `b898852c3676b8d840ee76f89536a241fbeb2588` remain retained and explicitly identified as affected by the existing-scratch hardlink bypass. Later documentation receipts preserve the corrected source bytes.
 
 ## Verified implementation and evidence
 
@@ -38,7 +38,7 @@ Current tested source is being published as `native-private-scratch-2026-11-01`;
 
 ## Recovery and local environment
 
-Current verified canonical recovery bundle: `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-execution-2026-11-01.bundle`, with owned `restored-execution-2026-11-01` beside it. It contains complete primary Git history and all five provider/task/repository/execution tags. Fresh restore passed all 33 source hashes, current state/tasks/log, original plan, continuity and Git fsck. The documentation receipt is followed by verified atomic bundle refresh and fast-forward/checks of the owned clone; an external receipt records final local/remote heads. Earlier repository/task/foundation bundles and clones remain retained.
+Current verified canonical recovery bundle: `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-private-scratch-2026-11-01.bundle`, with owned `restored-private-scratch-2026-11-01` beside it. It contains complete primary history and all six source tags. Fresh restore passed all 33 hashes, current state/tasks/log, original plan, continuity and Git fsck. The documentation receipt is followed by verified atomic bundle refresh and fast-forward/checks of this clone; an external receipt records final heads. All earlier bundles/clones remain retained, including the explicitly affected execution checkpoint.
 
 The physical project root is `/Users/utkarshrajput/Library/Application Support/Local AI Workspaces/ChatGPT/Harness`. `Documents/ChatGPT/Harness` resolves here through a compatibility symlink. New working files, outputs and scratch remain outside iCloud Drive; existing history and unrelated syncing are preserved.
 
@@ -50,7 +50,7 @@ No paid inference or cloud resources have been created during construction. No r
 
 ## Next concrete actions
 
-1. Finish publishing/restoring the private-scratch correction, then add trusted verification/completion and safe reconciliation/resume through the shared task lifecycle, followed by task CLI/headless events. The alias defect took priority this turn; no task-completion implementation is claimed. Existing SDK and real compiler repair checks still pass.
+1. Add trusted verification/completion and safe reconciliation/resume through the shared task lifecycle, followed by task CLI/headless events. The private-scratch correction is published/restored; it took priority this turn, and no completion implementation is claimed. Existing SDK and real compiler repair checks still pass.
 2. Run Linux execution/isolation tests on an actual CPU host when available, checking namespace permissions first. Implement owned writable execution workspaces, PTY/stdin/job lifecycle and robust descendant/parent-crash handling. Extend editing with unified diffs/create/delete/rename, conflict UX and Git/index reconciliation.
 3. Keep auditing the remaining pinned reference features alongside implementation. Do not mark M0 or the full release complete from this component's results.
 

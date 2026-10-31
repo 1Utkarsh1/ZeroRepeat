@@ -36,6 +36,8 @@ Status: `[ ]` pending, `[-]` in progress, `[x]` verified for the stated scope. E
 
 Add trusted task verification/completion, explicit safe reconciliation/resume and task CLI/events through the shared runtime. Validate Linux isolation on an actual CPU host, then owned writable workspaces, PTY/stdin/jobs and robust descendant/parent-crash handling. Keep pending-job protection, model/session binding, exact input/delegation/cost budgets, unified diffs/create/delete/rename, conflict UX and Git/index/LSP visible. Do not retry uncertain actions. See `research/isolated-execution.md`, `research/repository-editing.md` and `research/task-driver.md` for current verified scope.
 
+Implementation pointer: `tasks.state` currently has a closed SQL CHECK in `context.zig`; adding verifying/completed states needs a preserving, transactionally verified migration with foreign-key/trigger handling. Completion must bind trusted evidence to registered requirements/current source and reject unresolved actions/edits/executions. The model must not receive completion/reconciliation authority, and recovery must not signal historical PIDs or replay uncertain work. The private-scratch API uses a 0700 ACL-free parent and actual child paths for caches.
+
 ## Per-turn discipline
 
 - Read `AGENTS.md`, current state/tasks/latest log and full contract before changes; inspect actual files/Git/processes/results.
