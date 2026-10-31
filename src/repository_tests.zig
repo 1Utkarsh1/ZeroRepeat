@@ -389,7 +389,7 @@ test "version two migration preserves action evidence and assigns historical con
     }
     var ctx = try context.Context.open(path, .{});
     defer ctx.close();
-    try std.testing.expectEqual(@as(i64, 3), try number(&ctx, "PRAGMA user_version;"));
+    try std.testing.expectEqual(@as(i64, 4), try number(&ctx, "PRAGMA user_version;"));
     try std.testing.expectEqual(@as(i64, 17), try ctx.generation());
     try std.testing.expectEqual(@as(i64, 1), try number(&ctx, "SELECT management FROM actions WHERE provider_id='old-act';"));
     try std.testing.expectEqual(@as(i64, 0), try number(&ctx, "SELECT management FROM actions WHERE provider_id='old-inspect';"));

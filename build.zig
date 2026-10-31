@@ -65,8 +65,14 @@ pub fn build(b: *std.Build) void {
         .root_module = b.createModule(.{ .root_source_file = b.path("src/repository_crash_fixture.zig"), .target = target, .optimize = optimize, .link_libc = true }),
     });
     crash_fixture.root_module.linkLibrary(sqlite);
+    const network_fixture = b.addExecutable(.{
+        .name = "execution-network-fixture",
+        .root_module = b.createModule(.{ .root_source_file = b.path("src/execution_network_fixture.zig"), .target = target, .optimize = optimize, .link_libc = true }),
+    });
     const test_paths = b.addOptions();
     test_paths.addOptionPath("crash_fixture", crash_fixture.getEmittedBin());
+    test_paths.addOptionPath("network_fixture", network_fixture.getEmittedBin());
+    test_paths.addOption([]const u8, "zig_executable", b.graph.zig_exe);
     const process_testbin = b.addTest(.{
         .root_module = b.createModule(.{ .root_source_file = b.path("src/repository_process_tests.zig"), .target = target, .optimize = optimize, .link_libc = true, .imports = &.{ .{ .name = "zerorepeat", .module = core }, .{ .name = "test_paths", .module = test_paths.createModule() } } }),
     });
@@ -75,8 +81,8 @@ pub fn build(b: *std.Build) void {
     test_step.dependOn(&process_tests.step);
     const test_build = b.step("test-build", "Build and install all test binaries without executing them");
     test_build.dependOn(b.getInstallStep());
-    const artifacts = .{ core_testbin, cli_testbin, integration_testbin, process_testbin, crash_fixture };
-    const names = .{ "core-tests", "cli-parser-tests", "cli-integration-tests", "repository-process-tests", "repository-crash-fixture" };
+    const artifacts = .{ core_testbin, cli_testbin, integration_testbin, process_testbin, crash_fixture, network_fixture };
+    const names = .{ "core-tests", "cli-parser-tests", "cli-integration-tests", "repository-process-tests", "repository-crash-fixture", "execution-network-fixture" };
     inline for (artifacts, names) |artifact, name| test_build.dependOn(&b.addInstallArtifact(artifact, .{ .dest_sub_path = name }).step);
     const check = b.addRunArtifact(exe);
     check.addArgs(&.{ "continuity", "check" });

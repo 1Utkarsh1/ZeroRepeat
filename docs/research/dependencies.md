@@ -74,4 +74,6 @@ No Linux executable was run on the macOS host. Linux runtime behavior, thread-co
 
 ## Native repository platform interfaces — 1 November
 
+The later isolated-execution checkpoint passes 163 native tests, including real Zig compile/repair and network denial, and builds/links the Linux CLI/test roots/two helpers. It adds native libc process/socket interfaces and established sandbox-exec/bwrap command boundaries, without a first-party C/Python/shell runtime. See [execution source and verification](isolated-execution.md); Linux execution remains pending.
+
 `src/repository_fs.zig` uses the pinned Zig standard library and target libc/kernel interfaces; no new package dependency was added. macOS uses descriptor-based metadata/ACL copying, extended attributes, atomic exchange and full file synchronization through the installed SDK ABI. Linux uses statx metadata, descriptor xattrs and rename exchange. Native metadata fixtures run on macOS; Linux variants build/link only. Relevant primary manuals, pinned source findings, portability limits and commands are recorded in [repository-editing research](repository-editing.md). Runtime feature availability still needs Linux execution and sandbox integration; a successful cross-build does not establish either.

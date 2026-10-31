@@ -100,6 +100,128 @@ fn number(ctx: *context.Context, sql: [:0]const u8) !i64 {
     return ctx.database.number(sql, &.{});
 }
 
+fn commandArgs(exec: *@import("execution.zig").Execution, generation: i64, program: []const u8) ![]u8 {
+    return std.json.Stringify.valueAlloc(a, .{ .op = "exec.run", .scope = exec.scope, .generation = generation, .argv = [_][]const u8{ "/bin/sh", "-c", program }, .timeout_ms = 1000 }, .{});
+}
+
+test "shared driver inspects edits tests repairs and retains execution evidence through compaction" {
+    const execution_tests = @import("execution_tests.zig");
+    const repository = @import("repository.zig");
+    var roots = try execution_tests.Roots.init();
+    defer roots.deinit();
+    try roots.tmp.dir.writeFile(io, .{ .sub_path = "workspace/source", .data = "wrong\n" });
+    var ctx = try fixture();
+    defer ctx.close();
+    var repo = try repository.Repository.open(&ctx, a, io, roots.workspace, &.{.{ .path = "source", .write = true }});
+    defer repo.close();
+    var snapshot = try repo.read(a, "source", null);
+    defer snapshot.deinit(a);
+    var exec = try roots.open(&ctx);
+    defer exec.close();
+    const id = try create(&ctx, .{});
+    const generation = try ctx.generation();
+    const first = try std.json.Stringify.valueAlloc(a, .{ .op = "repo.apply", .scope = repo.scope, .generation = generation, .edits = .{.{ .path = "source", .ref = "f1:v1", .replacements = .{.{ .start = 0, .end = 5, .text = "stillwrong" }} }} }, .{});
+    defer a.free(first);
+    const check = "test \"$(cat source)\" = correct && printf verified-source";
+    const failed_test = try commandArgs(&exec, generation + 1, check);
+    defer a.free(failed_test);
+    const repair = try std.json.Stringify.valueAlloc(a, .{ .op = "repo.apply", .scope = repo.scope, .generation = generation + 3, .edits = .{.{ .path = "source", .ref = "f1:v2", .replacements = .{.{ .start = 0, .end = 10, .text = "correct" }} }} }, .{});
+    defer a.free(repair);
+    const passed_test = try commandArgs(&exec, generation + 4, check);
+    defer a.free(passed_test);
+    const fold = try compressArgs(generation + 6);
+    defer a.free(fold);
+    const read = try std.json.Stringify.valueAlloc(a, .{ .op = "exec.read", .scope = exec.scope, .id = 2, .channel = "stdout" }, .{});
+    defer a.free(read);
+    var script: Script = .{ .steps = &.{
+        .{ .reply = toolReply("policy", &.{.{ .id = "policy", .name = "inspect", .arguments = "{\"op\":\"exec.policy\"}" }}) },
+        .{ .reply = toolReply("read", &.{.{ .id = "read", .name = "inspect", .arguments = "{\"op\":\"repo.read\",\"path\":\"source\"}" }}) },
+        .{ .reply = toolReply("edit", &.{.{ .id = "edit", .name = "patch", .arguments = first }}) },
+        .{ .reply = toolReply("failed-test", &.{.{ .id = "failed-test", .name = "act", .arguments = failed_test }}) },
+        .{ .reply = toolReply("repair", &.{.{ .id = "repair", .name = "patch", .arguments = repair }}) },
+        .{ .reply = toolReply("passed-test", &.{.{ .id = "passed-test", .name = "act", .arguments = passed_test }}) },
+        .{ .reply = toolReply("fold", &.{.{ .id = "fold", .name = "act", .arguments = fold }}) },
+        .{ .reply = toolReply("evidence", &.{.{ .id = "evidence", .name = "inspect", .arguments = read }}) },
+        .{},
+    } };
+    defer script.deinit();
+    const result = try agent.run(&ctx, a, io, id, script.provider(), .{ .repository = &repo, .execution = &exec });
+    try std.testing.expectEqual(task.State.awaiting_verification, result.state);
+    try std.testing.expectEqual(@as(i64, 1), try number(&ctx, "SELECT count(*) FROM execution_runs WHERE id=1 AND state='finished' AND term_kind='exit' AND term_value=1 AND action_id IS NOT NULL;"));
+    try std.testing.expectEqual(@as(i64, 1), try number(&ctx, "SELECT count(*) FROM execution_runs WHERE id=2 AND state='finished' AND term_kind='exit' AND term_value=0 AND action_id IS NOT NULL;"));
+    try std.testing.expect(std.mem.indexOf(u8, script.payloads.items[7], "verified-source") != null);
+    var projected = try std.json.parseFromSlice(std.json.Value, a, script.payloads.items[7], .{});
+    defer projected.deinit();
+    var failure_retained = false;
+    for (projected.value.object.get("messages").?.array.items) |message| {
+        if (!std.mem.eql(u8, message.object.get("role").?.string, "tool")) continue;
+        if (std.mem.indexOf(u8, message.object.get("content").?.string, "\"term_value\":1") != null) failure_retained = true;
+    }
+    try std.testing.expect(failure_retained);
+    try std.testing.expect(std.mem.indexOf(u8, script.payloads.items[8], "exec.read") != null);
+    // The independent host checks exact current source and runs a fresh verification.
+    var actual = try repo.read(a, "source", null);
+    defer actual.deinit(a);
+    try std.testing.expectEqualStrings("correct\n", actual.body);
+    const verified = try exec.run(a, .{ .generation = try ctx.generation(), .argv = &.{ "/bin/sh", "-c", check }, .timeout_ms = 1000 }, null, null, null);
+    try std.testing.expectEqualStrings("exit", verified.term_kind);
+    try std.testing.expectEqual(@as(i64, 0), verified.term_value);
+}
+
+test "execution preflight cannot grant policy fields and rejects the entire invalid burst before a command" {
+    const tools = @import("context_tools.zig");
+    var roots = try @import("execution_tests.zig").Roots.init();
+    defer roots.deinit();
+    var ctx = try fixture();
+    defer ctx.close();
+    var exec = try roots.open(&ctx);
+    defer exec.close();
+    const id = try create(&ctx, .{});
+    const command = try commandArgs(&exec, try ctx.generation(), "printf once > \"$TMPDIR/counter\"");
+    defer a.free(command);
+    const escalation = try std.json.Stringify.valueAlloc(a, .{ .op = "exec.run", .scope = exec.scope, .generation = try ctx.generation(), .argv = .{"/bin/true"}, .network = true }, .{});
+    defer a.free(escalation);
+    var script: Script = .{ .steps = &.{.{ .reply = toolReply("bad-burst", &.{
+        .{ .id = "first", .name = "act", .arguments = command },
+        .{ .id = "second", .name = "act", .arguments = escalation },
+    }) }} };
+    defer script.deinit();
+    try std.testing.expectError(error.UnknownField, agent.run(&ctx, a, io, id, script.provider(), .{ .execution = &exec }));
+    try std.testing.expectEqual(@as(i64, 0), try number(&ctx, "SELECT count(*) FROM execution_runs;"));
+    try std.testing.expectError(error.UnsupportedOperation, tools.prepare(a, .{ .name = "act", .arguments = command }));
+    try std.testing.expectError(error.ExecutionMismatch, tools.prepareWithCapabilities(a, .{ .name = "inspect", .arguments = "{\"op\":\"exec.read\",\"scope\":\"other-project\",\"id\":1,\"channel\":\"stdout\"}" }, null, &exec));
+    try std.testing.expect(std.mem.indexOf(u8, tools.tool_definitions, "exec.run") == null);
+}
+
+test "task deadline reaches the command and failed action acknowledgement never repeats its effect" {
+    var roots = try @import("execution_tests.zig").Roots.init();
+    defer roots.deinit();
+    var ctx = try fixture();
+    defer ctx.close();
+    var exec = try roots.open(&ctx);
+    defer exec.close();
+    const id = try create(&ctx, .{ .elapsed_ms = 500 });
+    const command = try commandArgs(&exec, try ctx.generation(), "trap '' TERM; while :; do :; done");
+    defer a.free(command);
+    var script: Script = .{ .steps = &.{.{ .reply = toolReply("timeout", &.{.{ .id = "timeout", .name = "act", .arguments = command }}) }} };
+    defer script.deinit();
+    try std.testing.expectError(error.TaskTimeout, agent.run(&ctx, a, io, id, script.provider(), .{ .execution = &exec }));
+    try std.testing.expectEqual(task.State.budget_exhausted, (try (task.Journal{ .ctx = &ctx }).get(id)).state);
+    try std.testing.expectEqual(@as(i64, 1), try number(&ctx, "SELECT count(*) FROM execution_runs WHERE state='finished' AND reason='timed_out';"));
+    const second = try create(&ctx, .{});
+    const once = try commandArgs(&exec, try ctx.generation(), "printf once >> \"$TMPDIR/once\"");
+    defer a.free(once);
+    try ctx.database.exec("CREATE TRIGGER fail_execution_ack BEFORE UPDATE OF result ON actions BEGIN SELECT RAISE(ABORT,'fixture'); END;");
+    var fault: Script = .{ .steps = &.{.{ .reply = toolReply("once", &.{.{ .id = "once", .name = "act", .arguments = once }}) }} };
+    defer fault.deinit();
+    try std.testing.expectError(error.SqliteConstraint, agent.run(&ctx, a, io, second, fault.provider(), .{ .execution = &exec }));
+    try std.testing.expectEqual(task.State.attention, (try (task.Journal{ .ctx = &ctx }).get(second)).state);
+    try std.testing.expectError(error.TaskNotPending, agent.run(&ctx, a, io, second, fault.provider(), .{ .execution = &exec }));
+    const bytes = try roots.tmp.dir.readFileAlloc(io, "scratch/once", a, .limited(100));
+    defer a.free(bytes);
+    try std.testing.expectEqualStrings("once", bytes);
+}
+
 test "bounded driver folds retrieves and preserves exact read evidence in the next stateless request" {
     var ctx = try fixture();
     defer ctx.close();
@@ -421,7 +543,7 @@ test "schema one migration preserves original bytes references generation and id
     }
     var ctx = try context.Context.open(path, config());
     defer ctx.close();
-    try std.testing.expectEqual(@as(i64, 3), try number(&ctx, "PRAGMA user_version;"));
+    try std.testing.expectEqual(@as(i64, 4), try number(&ctx, "PRAGMA user_version;"));
     try std.testing.expectEqual(@as(i64, 17), try ctx.generation());
     var view = try ctx.view(a);
     defer view.deinit();

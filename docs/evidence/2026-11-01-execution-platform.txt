@@ -1,0 +1,9 @@
+ProductName:		macOS
+ProductVersion:		27.0.1
+BuildVersion:		26A434
+180a0356611b5de7a7db84b800ed47a1d2f15ec884d0fb960445366ededac7c8  /System/Library/Sandbox/Profiles/system.sb
+bdfc2354c683c8fb95a39e63fbc8610e9739b0256c89ab880564edefbe73a5ce  /System/Library/Sandbox/Profiles/dyld-support.sb
+58839ef01b4eef8aac0d2aa8f9d1c074ae45aafe3533965b030672450064acc8  /usr/bin/sandbox-exec
+0c655913c1476055297c9df10c2646dcf3c6a78d82962a65b544b81105fc7699  /Users/utkarshrajput/.cache/zerorepeat/bootstrap/zig-aarch64-macos-0.17.0/lib/std/process/Child.zig
+1a770001e309f24c8c58a9fdb3c095994c454cbfa9dba9d4f1dede2f134eeac7  /Users/utkarshrajput/.cache/zerorepeat/bootstrap/zig-aarch64-macos-0.17.0/lib/std/Io/Threaded.zig
+88644f54aba69680f854fe669fdcb4e36fa9ca7ec62b3fe232b464601bcbee86  /Users/utkarshrajput/.cache/zerorepeat/bootstrap/zig-aarch64-macos-0.17.0/lib/std/Io/File/MultiReader.zig

@@ -1,0 +1,8 @@
+Build Summary: 5/5 steps succeeded
+install success
++- install zerorepeat success
+   +- compile exe zerorepeat debug native success 4s MaxRSS:271M
+      +- WriteFile cached
+      +- compile lib sqlite3 debug native cached 76ms MaxRSS:30M
+      +- compile lib sqlite3 debug native (reused)
+

@@ -6,6 +6,7 @@ const stream = @import("provider_stream.zig");
 const http = @import("provider_http.zig");
 const tools = @import("context_tools.zig");
 const repository = @import("repository.zig");
+const execution = @import("execution.zig");
 const Allocator = std.mem.Allocator;
 const Io = std.Io;
 
@@ -41,6 +42,7 @@ pub const Options = struct {
     request_limits: wire.Limits = .{},
     stream_limits: stream.Limits = .{},
     repository: ?*repository.Repository = null,
+    execution: ?*execution.Execution = null,
 };
 
 const Prompt = struct {
@@ -57,6 +59,10 @@ const Prompt = struct {
 /// Repository effects use the same bounded driver when the host grants a repository capability.
 pub fn run(ctx: *context.Context, allocator: Allocator, io: Io, id: i64, provider: Provider, options: Options) !task.Snapshot {
     if (options.repository) |repo| if (repo.ctx != ctx) return error.RepositoryMismatch;
+    if (options.execution) |exec| {
+        if (exec.ctx != ctx) return error.ExecutionMismatch;
+        if (options.repository) |repo| if (!std.mem.eql(u8, repo.root_path, exec.workspace.path)) return error.ExecutionMismatch;
+    }
     if (provider.secret) |secret| if (secret.len == 0) return error.InvalidCredential;
     try options.stream_limits.validate();
     try io.checkCancel();
@@ -126,16 +132,17 @@ fn runLoop(ctx: *context.Context, allocator: Allocator, io: Io, id: i64, provide
         const effects = try allocator.alloc(task.Effect, reply.tools.len);
         defer allocator.free(effects);
         for (reply.tools, prepared, effects) |call, *plan, *effect| {
-            plan.* = try tools.prepareWithRepository(allocator, .{ .name = call.name, .arguments = call.arguments }, options.repository);
+            plan.* = try tools.prepareWithCapabilities(allocator, .{ .name = call.name, .arguments = call.arguments }, options.repository, options.execution);
             count += 1;
             effect.* = .{ .mutating = plan.mutating(), .management = plan.management() };
         }
         try journal.planActions(request, reply.tools, effects);
         var generation = prompt.generation;
         for (prepared, 0..) |*plan, position| {
-            _ = try remaining(journal, io, id, started);
+            const budget_ms = try remaining(journal, io, id, started);
+            const deadline = Io.Clock.Timestamp.now(io, .awake).addDuration(.{ .clock = .awake, .raw = .fromMilliseconds(budget_ms) });
             const action = try journal.startAction(request, position, generation);
-            var result = plan.applyGuarded(ctx, allocator, provider.secret, action) catch |err| {
+            var result = plan.applyBefore(ctx, allocator, provider.secret, action, deadline) catch |err| {
                 if (err == error.CommittedResultUnavailable) return err;
                 const bytes = try std.json.Stringify.valueAlloc(allocator, .{ .@"error" = @errorName(err), .source = "native_tool" }, .{});
                 defer allocator.free(bytes);
@@ -209,7 +216,7 @@ fn compilePrompt(ctx: *context.Context, allocator: Allocator, id: i64, options: 
     const input: wire.Request = .{
         .model = options.model,
         .messages = try messages.toOwnedSlice(a),
-        .tools_json = if (options.repository) |repo| try tools.repositoryDefinitions(a, repo.hasWriteAccess()) else tools.tool_definitions,
+        .tools_json = if (options.execution != null) try tools.capabilityDefinitions(a, if (options.repository) |repo| repo.hasWriteAccess() else null) else if (options.repository) |repo| try tools.repositoryDefinitions(a, repo.hasWriteAccess()) else tools.tool_definitions,
         .max_tokens = @intCast(@min(state.limits.output_per_request, state.limits.output_tokens - state.output_charged)),
         .reasoning_field = options.reasoning_field,
     };

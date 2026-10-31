@@ -2,7 +2,7 @@
 
 The `native-repository-edits-2026-11-01` checkpoint connects the bounded Zig driver to explicitly granted repository files. It implements immutable file snapshots, scoped version refs, byte-range replacements, multi-file previews/publication, retained displaced inodes, native metadata copying, explicit versioned undo and conservative recovery. It advances ZR-03/04/05/06/10/12; those complete subsystem contracts remain open. Command execution, general sandboxing, Git inventory/indexing, unified-diff input and the full coding workflow are still required.
 
-Current implementation bytes are recorded by `../evidence/CURRENT_SOURCE.sha256`. The prior tested task-driver source was `8a0f2594c624eb251a12560a478c1da8040c34a9`. Schema-one and schema-two SQL fixtures are frozen from the earlier project revisions; `src/fixtures/task-v2.sql` was extracted from that task-driver tag. All first-party runtime, fixtures and tests are Zig/SQL data; no Python or shell implementation was introduced.
+The later `native-isolated-execution-2026-11-01` checkpoint adds scoped command/result tools, schema four and 163 passing native tests; see [isolated execution](isolated-execution.md). This document's schema-three/144-test results remain historical evidence at the repository-editing tag. Current implementation bytes are recorded by `../evidence/CURRENT_SOURCE.sha256`; use the named tag for historical bytes. The prior task-driver source was `8a0f2594c624eb251a12560a478c1da8040c34a9`. Schema-one/two fixtures are frozen from earlier revisions; `src/fixtures/task-v2.sql` was extracted from that task-driver tag. All first-party runtime/tests are Zig, with SQL data and no Python or shell implementation.
 
 ## Scope and source identity
 
