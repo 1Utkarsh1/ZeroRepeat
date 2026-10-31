@@ -17,7 +17,7 @@ Build the complete Zig coding harness in `PLAN.md`, optimized for correctness, t
 
 The public repository is https://github.com/1Utkarsh1/ZeroRepeat, configured as `origin`. The initial publication was verified at `275ea7296e481439b967aad173f658a20924fa03` on the default branch `Utkarsh/native-context-foundation`. Commit and push meaningful project checkpoints and before ending active work turns; compare the actual remote branch SHA with the intended local commit. Preserve history and report failures instead of force-pushing. The scoped personal instruction note is `/Users/utkarshrajput/.codex/memories/extensions/ad_hoc/notes/2026-10-29T230741Z-zerorepeat-github-checkpoints.md`. See `evidence/2026-10-30-github-publication.md`.
 
-Current tested implementation is being published as `native-repository-edits-2026-11-01`; exact current bytes are in `evidence/CURRENT_SOURCE.sha256`. The publication receipt records its commit and independent remote verification. Prior verified source: `8a0f2594c624eb251a12560a478c1da8040c34a9`, tagged `native-task-driver-2026-10-30`; its history and evidence remain retained.
+Latest tested implementation: `835a358df78af72fd4b699cb4e5771f82b674146`, tagged `native-repository-edits-2026-11-01`. GitHub API and Git transport independently confirmed exact branch/tag equality after push. Current bytes are in `evidence/CURRENT_SOURCE.sha256`; the publication/restore receipt is `evidence/2026-11-01-repository-checkpoint.md`. Subsequent documentation-only receipts preserve these implementation bytes. Prior task-driver history and evidence remain retained.
 
 ## Verified implementation and evidence
 
@@ -36,7 +36,7 @@ Current tested implementation is being published as `native-repository-edits-202
 
 ## Recovery and local environment
 
-The prior verified canonical recovery bundle is `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-task-2026-10-30.bundle`; its 22-hash task-driver restore remains retained. This checkpoint creates `zerorepeat-native-repository-2026-11-01.bundle` and an owned `restored-repository-2026-11-01` clone beside it, containing primary Git history and all four provider/task/repository tags. See the new publication receipt for actual restore/hash/continuity/fsck results; do not infer a successful backup from this intended filename.
+Current verified canonical recovery bundle: `/Users/utkarshrajput/.local/share/zerorepeat/checkpoints/zerorepeat-native-repository-2026-11-01.bundle`, with owned clone `restored-repository-2026-11-01` beside it. It contains complete primary Git history and all four provider/task/repository tags. Restore passed all 28 current source hashes, current state/tasks/log, original-plan comparison, continuity and Git fsck. After the documentation receipt commit, refresh the same owned bundle through a verified `.next` file and fast-forward the owned restore clone. The external receipt beside the bundle records the final head. The earlier task/foundation bundles and their restored clones remain retained.
 
 The physical project root is `/Users/utkarshrajput/Library/Application Support/Local AI Workspaces/ChatGPT/Harness`. `Documents/ChatGPT/Harness` resolves here through a compatibility symlink. New working files, outputs and scratch remain outside iCloud Drive; existing history and unrelated syncing are preserved.
 
